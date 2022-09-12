@@ -1,0 +1,44 @@
+POST http://localhost:8001/subaccounts
+
+{
+  "walletId": "WLT01",
+  "subAccounts": [
+    { "parentAccountCode": "1110", "name": "Kas Kecil" },
+    { "parentAccountCode": "1110", "name": "Kas Besar" },
+
+    { "parentAccountCode": "1120", "name": "Bank Mandiri" },
+    { "parentAccountCode": "1120", "name": "Bank BCA" },
+    { "parentAccountCode": "1120", "name": "Bank BNI" },
+    { "parentAccountCode": "1120", "name": "Bank BRI" },
+
+    { "parentAccountCode": "1130", "name": "Paku" },
+    { "parentAccountCode": "1130", "name": "Papan" },
+    { "parentAccountCode": "1130", "name": "Cat" },
+    { "parentAccountCode": "1130", "name": "Triplek" },
+
+    { "parentAccountCode": "1140", "name": "Kursi" },
+    { "parentAccountCode": "1140", "name": "Meja" },
+    { "parentAccountCode": "1140", "name": "Lemari" },
+
+    { "parentAccountCode": "2110", "name": "Udin" },
+
+    { "parentAccountCode": "2120", "name": "LB Kursi" },
+    { "parentAccountCode": "2120", "name": "LB Meja" },
+    { "parentAccountCode": "2120", "name": "LB Lemari" },
+
+    { "parentAccountCode": "2130", "name": "OH Kursi" },
+    { "parentAccountCode": "2130", "name": "OH Meja" },
+    { "parentAccountCode": "2130", "name": "OH Lemari" },
+
+    { "parentAccountCode": "3110", "name": "Mirza" },
+
+    { "parentAccountCode": "5110", "name": "HPP Kursi" },
+    { "parentAccountCode": "5110", "name": "HPP Meja" },
+    { "parentAccountCode": "5110", "name": "HPP Lemari" },
+
+    { "parentAccountCode": "5210", "name": "Listrik" },
+    { "parentAccountCode": "5210", "name": "Gas" },
+    { "parentAccountCode": "5210", "name": "Sewa" }
+
+  ]
+}

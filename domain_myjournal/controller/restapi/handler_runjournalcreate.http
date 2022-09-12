@@ -1,0 +1,47 @@
+POST http://localhost:8001/wallet/WLT01/journal
+
+{
+  "description": "Input Saldo Awal",
+  "transactions": [
+    {"sign": "+", "amount": 1500000,"subAccountCode": "KAS_BESAR"},
+    {"sign": "+", "amount": 1500000,"subAccountCode": "MIRZA"}
+  ]
+}
+
+###
+
+POST http://localhost:8001/wallet/WLT01/journal
+
+{
+  "description": "Beli Barang",
+  "transactions": [
+    {"sign": "+", "amount": 400000,"subAccountCode": "UDIN"},
+    {"sign": "-", "amount":  20000,"subAccountCode": "KAS_BESAR"},
+    {"sign": "+", "amount": 420000,"subAccountCode": "PAPAN"}
+  ]
+}
+
+###
+
+POST http://localhost:8001/wallet/WLT01/journal
+
+{
+  "description": "Beli Barang Lagi",
+  "transactions": [
+    {"sign": "+", "amount": 300000,"subAccountCode": "UDIN"},
+    {"sign": "-", "amount":  20000,"subAccountCode": "KAS_BESAR"},
+    {"sign": "+", "amount": 320000,"subAccountCode": "CAT"}
+  ]
+}
+
+###
+
+POST http://localhost:8001/wallet/WLT01/journal
+
+{
+  "description": "Bayar Utang",
+  "transactions": [
+    {"sign": "-", "amount": 120000,"subAccountCode": "UDIN"},
+    {"sign": "-", "amount": 120000,"subAccountCode": "KAS_BESAR"}
+  ]
+}

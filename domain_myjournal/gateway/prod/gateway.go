@@ -1,0 +1,305 @@
+package prod
+
+import (
+	"context"
+	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"myjournal/domain_myjournal/model/entity"
+	"myjournal/domain_myjournal/model/repository"
+	"myjournal/shared/driver"
+	"myjournal/shared/infrastructure/config"
+	"myjournal/shared/infrastructure/database"
+	"myjournal/shared/infrastructure/logger"
+	"myjournal/shared/infrastructure/util"
+)
+
+type gateway struct {
+	*database.MongoWithTransaction
+	log     logger.Logger
+	appData driver.ApplicationData
+	config  *config.Config
+}
+
+// NewGateway ...
+func NewGateway(log logger.Logger, appData driver.ApplicationData, cfg *config.Config) *gateway {
+
+	const databaseName = "myjournal"
+
+	uri := fmt.Sprintf("mongodb://localhost:27017/%s?readPreference=primary&ssl=false", databaseName)
+
+	mwt := database.NewMongoWithTransaction(database.NewMongoDefault(uri), databaseName)
+
+	mwt.PrepareCollection([]any{
+		entity.User{},
+		entity.Wallet{},
+		entity.Account{},
+		entity.SubAccount{},
+		entity.AccountBalance{},
+		entity.SubAccountBalance{},
+		entity.Journal{},
+	})
+
+	return &gateway{
+		log:                  log,
+		appData:              appData,
+		config:               cfg,
+		MongoWithTransaction: mwt,
+	}
+}
+
+func (r *gateway) SaveAccounts(ctx context.Context, objs []*entity.Account) error {
+	r.log.Info(ctx, "called")
+
+	_, err := r.SaveBulk(ctx, util.ToSliceAny(objs))
+	if err != nil {
+		r.log.Error(ctx, "%v", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (r *gateway) SaveSubAccounts(ctx context.Context, objs []*entity.SubAccount) error {
+	r.log.Info(ctx, "called")
+
+	_, err := r.SaveBulk(ctx, util.ToSliceAny(objs))
+	if err != nil {
+		r.log.Error(ctx, "%v", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (r *gateway) SaveJournal(ctx context.Context, obj *entity.Journal) error {
+	r.log.Info(ctx, "called %v", obj)
+
+	_, err := r.SaveOrUpdate(ctx, string(obj.Id), obj)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *gateway) SaveSubAccountBalances(ctx context.Context, objs []*entity.SubAccountBalance) error {
+	r.log.Info(ctx, "called")
+
+	_, err := r.SaveBulk(ctx, util.ToSliceAny(objs))
+	if err != nil {
+		r.log.Error(ctx, "%v", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (r *gateway) SaveAccountBalances(ctx context.Context, objs []*entity.AccountBalance) error {
+	r.log.Info(ctx, "called")
+
+	_, err := r.SaveBulk(ctx, util.ToSliceAny(objs))
+	if err != nil {
+		r.log.Error(ctx, "%v", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (r *gateway) FindLastSubAccountBalances(ctx context.Context, req repository.FindLastSubAccountBalancesRequest) (map[entity.SubAccountCode]entity.Money, error) {
+	r.log.Info(ctx, "called %v", req.SubAccountCodes)
+
+	// https://www.mongodb.com/community/forums/t/get-the-latest-record-for-each-named-one/9636/2
+	// https://github.com/simagix/mongo-go-examples/blob/master/examples/aggregate_test.go
+	// https://studio3t.com/knowledge-base/articles/mongodb-aggregation-framework/
+	// https://www.mongodb.com/docs/drivers/go/current/fundamentals/aggregation/
+	// https://www.mongodb.com/blog/post/quick-start-golang--mongodb--data-aggregation-pipeline
+
+	var subAccountCodes bson.A
+	for _, val := range req.SubAccountCodes {
+		subAccountCodes = append(subAccountCodes, val)
+	}
+
+	//---
+	matchStage := bson.D{
+		{
+			"$match",
+			bson.M{
+				"sub_account.parent_account.wallet_id": req.WalletID,
+				"sub_account.code":                     bson.M{"$in": subAccountCodes},
+			},
+		},
+	}
+
+	groupStage := bson.D{
+		{
+			"$group",
+			bson.M{
+				"_id":     "$sub_account.code",
+				"balance": bson.M{"$last": "$balance"},
+			},
+		},
+	}
+
+	sortStage := bson.D{
+		{
+			"$sort",
+			bson.M{"date": -1},
+		},
+	}
+	//---
+
+	coll := r.GetCollection(entity.SubAccountBalance{})
+	cursor, err := coll.Aggregate(ctx, mongo.Pipeline{
+		matchStage,
+		groupStage,
+		sortStage,
+	})
+	if err != nil {
+		r.log.Error(ctx, err.Error())
+		return nil, err
+	}
+
+	results := map[entity.SubAccountCode]entity.Money{}
+
+	for cursor.Next(ctx) {
+
+		// TODO must find out how
+		var result bson.D
+		if err := cursor.Decode(&result); err != nil {
+			r.log.Error(ctx, err.Error())
+			return nil, err
+		}
+
+		x := result.Map()
+		codeAsAny := x["_id"]
+		balanceAsAny := x["balance"]
+
+		codeAsString, ok := codeAsAny.(string)
+		if !ok {
+			panic(err.Error())
+		}
+
+		balanceAsFloat64, ok := balanceAsAny.(float64)
+		if !ok {
+			panic(err.Error())
+		}
+
+		results[entity.SubAccountCode(codeAsString)] = entity.Money(balanceAsFloat64)
+
+		//results[result.] = &result
+		//r.log.Info(ctx, "%+v", result)
+	}
+	if err := cursor.Err(); err != nil {
+		r.log.Error(ctx, err.Error())
+		return nil, err
+	}
+
+	return results, nil
+}
+
+// [{Key:_id Value:MIRZA} {Key:balance Value:1.5e+06}]
+
+func (r *gateway) FindSubAccounts(ctx context.Context, req repository.FindSubAccountsRequest) (map[entity.SubAccountCode]entity.SubAccount, error) {
+	r.log.Info(ctx, "called %v", req.SubAccountCodes)
+
+	var bsonObjectIDs bson.A
+	for _, val := range req.SubAccountCodes {
+		bsonObjectIDs = append(bsonObjectIDs, val)
+	}
+
+	criteria := bson.M{
+		"parent_account.wallet_id": req.WalletID,
+		"code":                     bson.M{"$in": bsonObjectIDs},
+	}
+
+	var page, size int64 = 1, 20
+
+	skip := size * (page - 1)
+	limit := size
+
+	sort := bson.M{"code": 1}
+
+	findOpts := options.FindOptions{
+		Limit: &limit,
+		Skip:  &skip,
+		Sort:  sort,
+	}
+
+	coll := r.GetCollection(entity.SubAccount{})
+	cursor, err := coll.Find(ctx, criteria, &findOpts)
+	if err != nil {
+		r.log.Error(ctx, err.Error())
+		return nil, err
+	}
+
+	results := map[entity.SubAccountCode]entity.SubAccount{}
+
+	for cursor.Next(ctx) {
+		var result entity.SubAccount
+		if err := cursor.Decode(&result); err != nil {
+			r.log.Error(ctx, err.Error())
+			return nil, err
+		}
+		results[result.Code] = result
+	}
+	if err := cursor.Err(); err != nil {
+		r.log.Error(ctx, err.Error())
+		return nil, err
+	}
+
+	return results, nil
+}
+
+func (r *gateway) FindAccounts(ctx context.Context, req repository.FindAccountsRequest) (map[entity.AccountCode]entity.Account, error) {
+	r.log.Info(ctx, "called %v", req)
+
+	var bsonObjectIDs bson.A
+	for _, val := range req.AccountIds {
+		bsonObjectIDs = append(bsonObjectIDs, val)
+	}
+
+	criteria := bson.M{
+		"_id":       bson.M{"$in": bsonObjectIDs},
+		"wallet_id": req.WalletID,
+	}
+
+	var page, size int64 = 1, 20
+
+	skip := size * (page - 1)
+	limit := size
+
+	sort := bson.M{"code": 1}
+
+	findOpts := options.FindOptions{
+		Limit: &limit,
+		Skip:  &skip,
+		Sort:  sort,
+	}
+
+	coll := r.GetCollection(entity.Account{})
+	cursor, err := coll.Find(ctx, criteria, &findOpts)
+	if err != nil {
+		r.log.Error(ctx, err.Error())
+		return nil, err
+	}
+
+	results := map[entity.AccountCode]entity.Account{}
+
+	for cursor.Next(ctx) {
+		var result entity.Account
+		if err := cursor.Decode(&result); err != nil {
+			r.log.Error(ctx, err.Error())
+			return nil, err
+		}
+		results[result.Code] = result
+	}
+	if err := cursor.Err(); err != nil {
+		r.log.Error(ctx, err.Error())
+		return nil, err
+	}
+
+	return results, nil
+}

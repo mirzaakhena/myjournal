@@ -1,0 +1,81 @@
+POST http://localhost:8001/accounts
+
+{
+  "walletId": "WLT01",
+  "accounts": [
+    {
+      "side": "ACTIVA",
+      "code": "1000","name": "Harta",
+      "accounts": [
+        {
+          "code": "1100","name": "Aktiva lancar",
+          "accounts": [
+            {"code": "1110","name": "Kas"},
+            {"code": "1120","name": "Bank"},
+            {"code": "1130","name": "Raw Material"},
+            {"code": "1140","name": "Work In Process"},
+            {"code": "1150","name": "Finished Goods"},
+            {"code": "1160","name": "Piutang Dagang"}
+          ]
+        }
+      ]
+    },
+    {
+      "side": "PASSIVA",
+      "code": "2000","name": "Utang",
+      "accounts": [
+        {
+          "code": "2100","name": "Utang lancar",
+          "accounts": [
+            {"code": "2110","name": "Utang Dagang"},
+            {"code": "2120","name": "Biaya Labour akan diperhitungkan"},
+            {"code": "2130","name": "Biaya Overhead akan diperhitungkan"}
+          ]
+        }
+      ]
+    },
+    {
+      "side": "PASSIVA",
+      "code": "3000","name": "Modal",
+      "accounts": [
+        {
+          "code": "3100","name": "Modal",
+          "accounts": [
+            {"code": "3110","name": "Modal"}
+          ]
+        }
+      ]
+    },
+    {
+      "side": "PASSIVA",
+      "code": "4000","name": "Pendapatan",
+      "accounts": [
+        {
+          "code": "4100","name": "Pendapatan",
+          "accounts": [
+            {"code": "4110","name": "Pendapatan Penjualan"}
+          ]
+        }
+      ]
+    },
+    {
+      "side": "ACTIVA",
+      "code": "5000","name": "Biaya",
+      "accounts": [
+        {
+          "code": "5100","name": "HPP",
+          "accounts": [
+            {"code": "5110","name": "Pendapatan Penjualan"}
+          ]
+        },
+        {
+          "code": "5200","name": "Biaya",
+          "accounts": [
+            {"code": "5210","name": "Biaya umum"},
+            {"code": "5220","name": "Biaya khusus"}
+          ]
+        }
+      ]
+    }
+  ]
+}

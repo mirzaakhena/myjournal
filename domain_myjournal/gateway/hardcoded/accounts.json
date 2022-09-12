@@ -1,0 +1,222 @@
+[
+  {
+    "id": "WLT01_1000",
+    "walletId": "WLT01",
+    "code": "1000",
+    "name": "Harta",
+    "level": 1,
+    "side": "ACTIVA"
+  },
+  {
+    "id": "WLT01_1100",
+    "walletId": "WLT01",
+    "code": "1100",
+    "name": "Aktiva lancar",
+    "level": 2,
+    "side": "ACTIVA",
+    "parentAccountId": "WLT01_1000"
+  },
+  {
+    "id": "WLT01_1110",
+    "walletId": "WLT01",
+    "code": "1110",
+    "name": "Kas",
+    "level": 3,
+    "side": "ACTIVA",
+    "parentAccountId": "WLT01_1100"
+  },
+  {
+    "id": "WLT01_1120",
+    "walletId": "WLT01",
+    "code": "1120",
+    "name": "Bank",
+    "level": 3,
+    "side": "ACTIVA",
+    "parentAccountId": "WLT01_1100"
+  },
+  {
+    "id": "WLT01_1130",
+    "walletId": "WLT01",
+    "code": "1130",
+    "name": "Raw Material",
+    "level": 3,
+    "side": "ACTIVA",
+    "parentAccountId": "WLT01_1100"
+  },
+  {
+    "id": "WLT01_1140",
+    "walletId": "WLT01",
+    "code": "1140",
+    "name": "Work In Process",
+    "level": 3,
+    "side": "ACTIVA",
+    "parentAccountId": "WLT01_1100"
+  },
+  {
+    "id": "WLT01_1150",
+    "walletId": "WLT01",
+    "code": "1150",
+    "name": "Finished Goods",
+    "level": 3,
+    "side": "ACTIVA",
+    "parentAccountId": "WLT01_1100"
+  },
+  {
+    "id": "WLT01_1160",
+    "walletId": "WLT01",
+    "code": "1160",
+    "name": "Piutang Dagang",
+    "level": 3,
+    "side": "ACTIVA",
+    "parentAccountId": "WLT01_1100"
+  },
+  {
+    "id": "WLT01_2000",
+    "walletId": "WLT01",
+    "code": "2000",
+    "name": "Utang",
+    "level": 1,
+    "side": "PASSIVA"
+  },
+  {
+    "id": "WLT01_2100",
+    "walletId": "WLT01",
+    "code": "2100",
+    "name": "Utang lancar",
+    "level": 2,
+    "side": "PASSIVA",
+    "parentAccountId": "WLT01_2000"
+  },
+  {
+    "id": "WLT01_2110",
+    "walletId": "WLT01",
+    "code": "2110",
+    "name": "Utang Dagang",
+    "level": 3,
+    "side": "PASSIVA",
+    "parentAccountId": "WLT01_2100"
+  },
+  {
+    "id": "WLT01_2120",
+    "walletId": "WLT01",
+    "code": "2120",
+    "name": "Biaya Labour akan diperhitungkan",
+    "level": 3,
+    "side": "PASSIVA",
+    "parentAccountId": "WLT01_2100"
+  },
+  {
+    "id": "WLT01_2130",
+    "walletId": "WLT01",
+    "code": "2130",
+    "name": "Biaya Overhead akan diperhitungkan",
+    "level": 3,
+    "side": "PASSIVA",
+    "parentAccountId": "WLT01_2100"
+  },
+  {
+    "id": "WLT01_3000",
+    "walletId": "WLT01",
+    "code": "3000",
+    "name": "Modal",
+    "level": 1,
+    "side": "PASSIVA"
+  },
+  {
+    "id": "WLT01_3100",
+    "walletId": "WLT01",
+    "code": "3100",
+    "name": "Modal",
+    "level": 2,
+    "side": "PASSIVA",
+    "parentAccountId": "WLT01_3000"
+  },
+  {
+    "id": "WLT01_3110",
+    "walletId": "WLT01",
+    "code": "3110",
+    "name": "Modal",
+    "level": 3,
+    "side": "PASSIVA",
+    "parentAccountId": "WLT01_3100"
+  },
+  {
+    "id": "WLT01_4000",
+    "walletId": "WLT01",
+    "code": "4000",
+    "name": "Pendapatan",
+    "level": 1,
+    "side": "PASSIVA"
+  },
+  {
+    "id": "WLT01_4100",
+    "walletId": "WLT01",
+    "code": "4100",
+    "name": "Pendapatan",
+    "level": 2,
+    "side": "PASSIVA",
+    "parentAccountId": "WLT01_4000"
+  },
+  {
+    "id": "WLT01_4110",
+    "walletId": "WLT01",
+    "code": "4110",
+    "name": "Pendapatan Penjualan",
+    "level": 3,
+    "side": "PASSIVA",
+    "parentAccountId": "WLT01_4100"
+  },
+  {
+    "id": "WLT01_5000",
+    "walletId": "WLT01",
+    "code": "5000",
+    "name": "Biaya",
+    "level": 1,
+    "side": "ACTIVA"
+  },
+  {
+    "id": "WLT01_5100",
+    "walletId": "WLT01",
+    "code": "5100",
+    "name": "HPP",
+    "level": 2,
+    "side": "ACTIVA",
+    "parentAccountId": "WLT01_5000"
+  },
+  {
+    "id": "WLT01_5110",
+    "walletId": "WLT01",
+    "code": "5110",
+    "name": "Pendapatan Penjualan",
+    "level": 3,
+    "side": "ACTIVA",
+    "parentAccountId": "WLT01_5100"
+  },
+  {
+    "id": "WLT01_5200",
+    "walletId": "WLT01",
+    "code": "5200",
+    "name": "Biaya",
+    "level": 2,
+    "side": "ACTIVA",
+    "parentAccountId": "WLT01_5000"
+  },
+  {
+    "id": "WLT01_5210",
+    "walletId": "WLT01",
+    "code": "5210",
+    "name": "Biaya umum",
+    "level": 3,
+    "side": "ACTIVA",
+    "parentAccountId": "WLT01_5200"
+  },
+  {
+    "id": "WLT01_5220",
+    "walletId": "WLT01",
+    "code": "5220",
+    "name": "Biaya khusus",
+    "level": 3,
+    "side": "ACTIVA",
+    "parentAccountId": "WLT01_5200"
+  }
+]

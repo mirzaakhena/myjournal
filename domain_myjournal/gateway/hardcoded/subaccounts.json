@@ -1,0 +1,380 @@
+[
+  {
+    "id": "WLT01_1110_KAS_KECIL",
+    "code": "KAS_KECIL",
+    "name": "Kas Kecil",
+    "parentAccount": {
+      "id": "WLT01_1110",
+      "walletId": "WLT01",
+      "code": "1110",
+      "name": "Kas",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_1100"
+    }
+  },
+  {
+    "id": "WLT01_1110_KAS_BESAR",
+    "code": "KAS_BESAR",
+    "name": "Kas Besar",
+    "parentAccount": {
+      "id": "WLT01_1110",
+      "walletId": "WLT01",
+      "code": "1110",
+      "name": "Kas",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_1100"
+    }
+  },
+  {
+    "id": "WLT01_1120_BANK_MANDIRI",
+    "code": "BANK_MANDIRI",
+    "name": "Bank Mandiri",
+    "parentAccount": {
+      "id": "WLT01_1120",
+      "walletId": "WLT01",
+      "code": "1120",
+      "name": "Bank",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_1100"
+    }
+  },
+  {
+    "id": "WLT01_1120_BANK_BCA",
+    "code": "BANK_BCA",
+    "name": "Bank BCA",
+    "parentAccount": {
+      "id": "WLT01_1120",
+      "walletId": "WLT01",
+      "code": "1120",
+      "name": "Bank",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_1100"
+    }
+  },
+  {
+    "id": "WLT01_1120_BANK_BNI",
+    "code": "BANK_BNI",
+    "name": "Bank BNI",
+    "parentAccount": {
+      "id": "WLT01_1120",
+      "walletId": "WLT01",
+      "code": "1120",
+      "name": "Bank",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_1100"
+    }
+  },
+  {
+    "id": "WLT01_1120_BANK_BRI",
+    "code": "BANK_BRI",
+    "name": "Bank BRI",
+    "parentAccount": {
+      "id": "WLT01_1120",
+      "walletId": "WLT01",
+      "code": "1120",
+      "name": "Bank",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_1100"
+    }
+  },
+  {
+    "id": "WLT01_1130_PAKU",
+    "code": "PAKU",
+    "name": "Paku",
+    "parentAccount": {
+      "id": "WLT01_1130",
+      "walletId": "WLT01",
+      "code": "1130",
+      "name": "Raw Material",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_1100"
+    }
+  },
+  {
+    "id": "WLT01_1130_PAPAN",
+    "code": "PAPAN",
+    "name": "Papan",
+    "parentAccount": {
+      "id": "WLT01_1130",
+      "walletId": "WLT01",
+      "code": "1130",
+      "name": "Raw Material",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_1100"
+    }
+  },
+  {
+    "id": "WLT01_1130_CAT",
+    "code": "CAT",
+    "name": "Cat",
+    "parentAccount": {
+      "id": "WLT01_1130",
+      "walletId": "WLT01",
+      "code": "1130",
+      "name": "Raw Material",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_1100"
+    }
+  },
+  {
+    "id": "WLT01_1130_TRIPLEK",
+    "code": "TRIPLEK",
+    "name": "Triplek",
+    "parentAccount": {
+      "id": "WLT01_1130",
+      "walletId": "WLT01",
+      "code": "1130",
+      "name": "Raw Material",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_1100"
+    }
+  },
+  {
+    "id": "WLT01_1140_KURSI",
+    "code": "KURSI",
+    "name": "Kursi",
+    "parentAccount": {
+      "id": "WLT01_1140",
+      "walletId": "WLT01",
+      "code": "1140",
+      "name": "Work In Process",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_1100"
+    }
+  },
+  {
+    "id": "WLT01_1140_MEJA",
+    "code": "MEJA",
+    "name": "Meja",
+    "parentAccount": {
+      "id": "WLT01_1140",
+      "walletId": "WLT01",
+      "code": "1140",
+      "name": "Work In Process",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_1100"
+    }
+  },
+  {
+    "id": "WLT01_1140_LEMARI",
+    "code": "LEMARI",
+    "name": "Lemari",
+    "parentAccount": {
+      "id": "WLT01_1140",
+      "walletId": "WLT01",
+      "code": "1140",
+      "name": "Work In Process",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_1100"
+    }
+  },
+  {
+    "id": "WLT01_2110_UDIN",
+    "code": "UDIN",
+    "name": "Udin",
+    "parentAccount": {
+      "id": "WLT01_2110",
+      "walletId": "WLT01",
+      "code": "2110",
+      "name": "Utang Dagang",
+      "level": 3,
+      "side": "PASSIVA",
+      "parentAccountId": "WLT01_2100"
+    }
+  },
+  {
+    "id": "WLT01_2120_LB_KURSI",
+    "code": "LB_KURSI",
+    "name": "LB Kursi",
+    "parentAccount": {
+      "id": "WLT01_2120",
+      "walletId": "WLT01",
+      "code": "2120",
+      "name": "Biaya Labour akan diperhitungkan",
+      "level": 3,
+      "side": "PASSIVA",
+      "parentAccountId": "WLT01_2100"
+    }
+  },
+  {
+    "id": "WLT01_2120_LB_MEJA",
+    "code": "LB_MEJA",
+    "name": "LB Meja",
+    "parentAccount": {
+      "id": "WLT01_2120",
+      "walletId": "WLT01",
+      "code": "2120",
+      "name": "Biaya Labour akan diperhitungkan",
+      "level": 3,
+      "side": "PASSIVA",
+      "parentAccountId": "WLT01_2100"
+    }
+  },
+  {
+    "id": "WLT01_2120_LB_LEMARI",
+    "code": "LB_LEMARI",
+    "name": "LB Lemari",
+    "parentAccount": {
+      "id": "WLT01_2120",
+      "walletId": "WLT01",
+      "code": "2120",
+      "name": "Biaya Labour akan diperhitungkan",
+      "level": 3,
+      "side": "PASSIVA",
+      "parentAccountId": "WLT01_2100"
+    }
+  },
+  {
+    "id": "WLT01_2130_OH_KURSI",
+    "code": "OH_KURSI",
+    "name": "OH Kursi",
+    "parentAccount": {
+      "id": "WLT01_2130",
+      "walletId": "WLT01",
+      "code": "2130",
+      "name": "Biaya Overhead akan diperhitungkan",
+      "level": 3,
+      "side": "PASSIVA",
+      "parentAccountId": "WLT01_2100"
+    }
+  },
+  {
+    "id": "WLT01_2130_OH_MEJA",
+    "code": "OH_MEJA",
+    "name": "OH Meja",
+    "parentAccount": {
+      "id": "WLT01_2130",
+      "walletId": "WLT01",
+      "code": "2130",
+      "name": "Biaya Overhead akan diperhitungkan",
+      "level": 3,
+      "side": "PASSIVA",
+      "parentAccountId": "WLT01_2100"
+    }
+  },
+  {
+    "id": "WLT01_2130_OH_LEMARI",
+    "code": "OH_LEMARI",
+    "name": "OH Lemari",
+    "parentAccount": {
+      "id": "WLT01_2130",
+      "walletId": "WLT01",
+      "code": "2130",
+      "name": "Biaya Overhead akan diperhitungkan",
+      "level": 3,
+      "side": "PASSIVA",
+      "parentAccountId": "WLT01_2100"
+    }
+  },
+  {
+    "id": "WLT01_3110_MIRZA",
+    "code": "MIRZA",
+    "name": "Mirza",
+    "parentAccount": {
+      "id": "WLT01_3110",
+      "walletId": "WLT01",
+      "code": "3110",
+      "name": "Modal",
+      "level": 3,
+      "side": "PASSIVA",
+      "parentAccountId": "WLT01_3100"
+    }
+  },
+  {
+    "id": "WLT01_5110_HPP_KURSI",
+    "code": "HPP_KURSI",
+    "name": "HPP Kursi",
+    "parentAccount": {
+      "id": "WLT01_5110",
+      "walletId": "WLT01",
+      "code": "5110",
+      "name": "Pendapatan Penjualan",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_5100"
+    }
+  },
+  {
+    "id": "WLT01_5110_HPP_MEJA",
+    "code": "HPP_MEJA",
+    "name": "HPP Meja",
+    "parentAccount": {
+      "id": "WLT01_5110",
+      "walletId": "WLT01",
+      "code": "5110",
+      "name": "Pendapatan Penjualan",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_5100"
+    }
+  },
+  {
+    "id": "WLT01_5110_HPP_LEMARI",
+    "code": "HPP_LEMARI",
+    "name": "HPP Lemari",
+    "parentAccount": {
+      "id": "WLT01_5110",
+      "walletId": "WLT01",
+      "code": "5110",
+      "name": "Pendapatan Penjualan",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_5100"
+    }
+  },
+  {
+    "id": "WLT01_5210_LISTRIK",
+    "code": "LISTRIK",
+    "name": "Listrik",
+    "parentAccount": {
+      "id": "WLT01_5210",
+      "walletId": "WLT01",
+      "code": "5210",
+      "name": "Biaya umum",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_5200"
+    }
+  },
+  {
+    "id": "WLT01_5210_GAS",
+    "code": "GAS",
+    "name": "Gas",
+    "parentAccount": {
+      "id": "WLT01_5210",
+      "walletId": "WLT01",
+      "code": "5210",
+      "name": "Biaya umum",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_5200"
+    }
+  },
+  {
+    "id": "WLT01_5210_SEWA",
+    "code": "SEWA",
+    "name": "Sewa",
+    "parentAccount": {
+      "id": "WLT01_5210",
+      "walletId": "WLT01",
+      "code": "5210",
+      "name": "Biaya umum",
+      "level": 3,
+      "side": "ACTIVA",
+      "parentAccountId": "WLT01_5200"
+    }
+  }
+]
