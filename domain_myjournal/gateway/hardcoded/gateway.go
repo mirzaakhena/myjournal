@@ -8,7 +8,7 @@ import (
 	"myjournal/shared/driver"
 	"myjournal/shared/infrastructure/config"
 	"myjournal/shared/infrastructure/logger"
-	"myjournal/shared/infrastructure/util"
+	"myjournal/shared/util"
 	"os"
 )
 
@@ -34,8 +34,8 @@ func (r *gateway) SaveAccounts(ctx context.Context, objs []*entity.Account) erro
 	return nil
 }
 
-func (r *gateway) SaveJournal(ctx context.Context, objs []*entity.Journal) error {
-	r.log.Info(ctx, "SaveJournal %s", util.MustJSON(objs))
+func (r *gateway) SaveJournal(ctx context.Context, obj *entity.Journal) error {
+	r.log.Info(ctx, "SaveJournal %s", util.MustJSON(obj))
 
 	return nil
 }
@@ -52,13 +52,13 @@ func (r *gateway) SaveAccountBalances(ctx context.Context, objs []*entity.Accoun
 	return nil
 }
 
-func (r *gateway) FindLastSubAccountBalances(ctx context.Context, req repository.FindLastSubAccountBalancesRepoRequest) (map[entity.SubAccountCode]*entity.SubAccountBalance, error) {
+func (r *gateway) FindLastSubAccountBalances(ctx context.Context, req repository.FindLastSubAccountBalancesRequest) (map[entity.SubAccountCode]entity.Money, error) {
 	r.log.Info(ctx, "called")
 
 	return nil, nil
 }
 
-func (r *gateway) FindSubAccounts(ctx context.Context, objs []entity.SubAccountCode) (map[entity.SubAccountCode]entity.SubAccount, error) {
+func (r *gateway) FindSubAccounts(ctx context.Context, req repository.FindSubAccountsRequest) (map[entity.SubAccountCode]entity.SubAccount, error) {
 	r.log.Info(ctx, "called")
 
 	dataBytes, err := os.ReadFile("domain_myjournal/gateway/prod/subaccounts.json")
@@ -92,7 +92,7 @@ func (r *gateway) SaveSubAccounts(ctx context.Context, objs []*entity.SubAccount
 	return nil
 }
 
-func (r *gateway) FindAccounts(ctx context.Context, objs []entity.AccountId) (map[entity.AccountCode]entity.Account, error) {
+func (r *gateway) FindAccounts(ctx context.Context, req repository.FindAccountsRequest) (map[entity.AccountCode]entity.Account, error) {
 	r.log.Info(ctx, "called")
 
 	dataBytes, err := os.ReadFile("domain_myjournal/gateway/prod/accounts.json")

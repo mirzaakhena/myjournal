@@ -39,18 +39,18 @@ func (r *runAccountsCreateInteractor) Execute(ctx context.Context, req InportReq
 	return res, nil
 }
 
-func (r *runAccountsCreateInteractor) traceAccounts(ctx context.Context, accountObjs []*entity.Account, walletId entity.WalletId, level entity.AccountLevel, childAccounts []Account, parentAccountId entity.AccountId, parentSide entity.AccountSide) []*entity.Account {
+func (r *runAccountsCreateInteractor) traceAccounts(ctx context.Context, accountObjs []*entity.Account, walletId entity.WalletID, level entity.AccountLevel, childAccounts []Account, parentAccountId entity.AccountID, parentSide entity.AccountSide) []*entity.Account {
 
 	for _, account := range childAccounts {
 
-		accountId := entity.NewAccountId(walletId, account.Code)
+		accountId := entity.NewAccountID(walletId, account.Code)
 
 		if account.Side == "" {
 			account.Side = parentSide
 		}
 
 		accountObjs = append(accountObjs, &entity.Account{
-			Id:              accountId,
+			ID:              accountId,
 			WalletId:        walletId,
 			Code:            account.Code,
 			Name:            account.Name,

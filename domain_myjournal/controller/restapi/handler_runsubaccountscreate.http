@@ -1,7 +1,6 @@
-POST http://localhost:8001/subaccounts
+POST http://localhost:8001/wallet/WLT01/subaccounts
 
 {
-  "walletId": "WLT01",
   "subAccounts": [
     { "parentAccountCode": "1110", "name": "Kas Kecil" },
     { "parentAccountCode": "1110", "name": "Kas Besar" },

@@ -30,8 +30,8 @@ type FindAccountsRepo interface {
 }
 
 type FindAccountsRequest struct {
-	WalletID   entity.WalletId
-	AccountIds []entity.AccountId
+	WalletID   entity.WalletID
+	AccountIds []entity.AccountID
 }
 
 type FindLastSubAccountBalancesRepo interface {
@@ -39,7 +39,7 @@ type FindLastSubAccountBalancesRepo interface {
 }
 
 type FindLastSubAccountBalancesRequest struct {
-	WalletID        entity.WalletId
+	WalletID        entity.WalletID
 	SubAccountCodes []entity.SubAccountCode
 }
 
@@ -48,6 +48,22 @@ type FindSubAccountsRepo interface {
 }
 
 type FindSubAccountsRequest struct {
-	WalletID        entity.WalletId
+	WalletID        entity.WalletID
 	SubAccountCodes []entity.SubAccountCode
+}
+
+type FindAllAccountRepo interface {
+	FindAllAccount(ctx context.Context, page, size int64, walletId entity.WalletID) ([]*entity.Account, int64, error)
+}
+
+type FindAllSubAccountRepo interface {
+	FindAllSubAccount(ctx context.Context, page, size int64, walletId entity.WalletID) ([]*entity.SubAccount, int64, error)
+}
+
+type FindAllJournalRepo interface {
+	FindAllJournal(ctx context.Context, page, size int64, walletId entity.WalletID) ([]*entity.Journal, int64, error)
+}
+
+type FindAllSubAccountBalanceRepo interface {
+	FindAllSubAccountBalance(ctx context.Context, page, size int64, walletId entity.WalletID) ([]*entity.SubAccountBalance, int64, error)
 }

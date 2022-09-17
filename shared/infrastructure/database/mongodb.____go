@@ -1,0 +1,260 @@
+package database
+
+import (
+	"context"
+	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"myjournal/shared/util"
+	"reflect"
+	"strconv"
+	"strings"
+)
+
+// NewMongoDefault uri := "mongodb://localhost:27017/?replicaSet=rs0&readPreference=primary&ssl=false"
+func NewMongoDefault(uri string) *mongo.Client {
+
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+
+	err = client.Connect(context.Background())
+	if err != nil {
+		panic(err)
+	}
+
+	err = client.Ping(context.TODO(), readpref.Primary())
+	if err != nil {
+		panic(err)
+	}
+
+	return client
+}
+
+type MongoWithoutTransaction struct {
+	MongoClient *mongo.Client
+}
+
+func NewMongoWithoutTransaction(c *mongo.Client) *MongoWithoutTransaction {
+	return &MongoWithoutTransaction{MongoClient: c}
+}
+
+func (r *MongoWithoutTransaction) GetDatabase(ctx context.Context) (context.Context, error) {
+	session, err := r.MongoClient.StartSession()
+	if err != nil {
+		return nil, err
+	}
+
+	sessionCtx := mongo.NewSessionContext(ctx, session)
+
+	return sessionCtx, nil
+}
+
+func (r *MongoWithoutTransaction) Close(ctx context.Context) error {
+	mongo.SessionFromContext(ctx).EndSession(ctx)
+	return nil
+}
+
+//----------------------------------------------------------------------------------------
+
+type MongoWithTransaction struct {
+	MongoClient *mongo.Client
+	//DatabaseName string
+	Database *mongo.Database
+}
+
+func NewMongoWithTransaction(c *mongo.Client, databaseName string) *MongoWithTransaction {
+	return &MongoWithTransaction{
+		MongoClient: c,
+		//DatabaseName: databaseName,
+		Database: c.Database(databaseName),
+	}
+}
+
+func (r *MongoWithTransaction) BeginTransaction(ctx context.Context) (context.Context, error) {
+
+	session, err := r.MongoClient.StartSession()
+	if err != nil {
+		return nil, err
+	}
+
+	sessionCtx := mongo.NewSessionContext(ctx, session)
+
+	err = session.StartTransaction()
+	if err != nil {
+		panic(err)
+	}
+
+	return sessionCtx, nil
+}
+
+func (r *MongoWithTransaction) CommitTransaction(ctx context.Context) error {
+
+	err := mongo.SessionFromContext(ctx).CommitTransaction(ctx)
+	if err != nil {
+		return err
+	}
+
+	mongo.SessionFromContext(ctx).EndSession(ctx)
+
+	return nil
+}
+
+func (r *MongoWithTransaction) RollbackTransaction(ctx context.Context) error {
+
+	err := mongo.SessionFromContext(ctx).AbortTransaction(ctx)
+	if err != nil {
+		return err
+	}
+
+	mongo.SessionFromContext(ctx).EndSession(ctx)
+
+	return nil
+}
+
+func (r *MongoWithTransaction) PrepareCollection(collectionObjs []any) *MongoWithTransaction {
+
+	existingCollectionNames, err := r.Database.ListCollectionNames(context.Background(), bson.D{})
+	if err != nil {
+		panic(err)
+	}
+
+	mapCollName := map[string]int{}
+	for _, name := range existingCollectionNames {
+		mapCollName[name] = 1
+	}
+
+	for _, obj := range collectionObjs {
+
+		nameInDB := getCollectionNameFormat(obj)
+
+		coll := r.Database.Collection(nameInDB)
+
+		if _, exist := mapCollName[nameInDB]; exist {
+			continue
+		}
+
+		r.createCollection(coll, r.Database)
+		r.collectIndex(coll, obj)
+
+	}
+
+	return r
+}
+
+func (r *MongoWithTransaction) PrepareCollectionIndex(collectionObjs []any) *MongoWithTransaction {
+
+	for _, obj := range collectionObjs {
+
+		//theType := reflect.TypeOf(obj)
+		//
+		//name := theType.Name()
+
+		nameInDB := getCollectionNameFormat(reflect.TypeOf(obj).Name())
+
+		coll := r.Database.Collection(nameInDB)
+
+		r.collectIndex(coll, obj)
+
+	}
+
+	return r
+}
+
+func (r *MongoWithTransaction) collectIndex(coll *mongo.Collection, obj any) {
+
+	theType := reflect.TypeOf(obj)
+
+	docs := bson.D{}
+	for i := 0; i < theType.NumField(); i++ {
+		theField := theType.Field(i)
+		tagValue, exist := theField.Tag.Lookup("index")
+		if !exist {
+			continue
+		}
+
+		atoi, err := strconv.Atoi(tagValue)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		docs = append(docs, bson.E{Key: strings.ToLower(getCollectionFieldNameFormat(theField.Name)), Value: atoi})
+	}
+
+	if len(docs) > 0 {
+		_, err := coll.Indexes().CreateOne(context.TODO(), mongo.IndexModel{
+			Keys: docs,
+			// Options: options.Index().SetUnique(true).SetExpireAfterSeconds(1),
+		})
+		if err != nil {
+			panic(err)
+		}
+	}
+
+}
+
+func (r *MongoWithTransaction) createCollection(coll *mongo.Collection, db *mongo.Database) {
+	createCmd := bson.D{{"create", coll.Name()}}
+	res := db.RunCommand(context.Background(), createCmd)
+	err := res.Err()
+	if err != nil {
+		panic(err)
+	}
+}
+
+// SaveOrUpdate ...
+func (r *MongoWithTransaction) SaveOrUpdate(ctx context.Context, id string, data any) (any, error) {
+
+	name := getCollectionNameFormat(data)
+	coll := r.Database.Collection(name)
+
+	filter := bson.D{{"_id", id}}
+	update := bson.D{{"$set", data}}
+	opts := options.Update().SetUpsert(true)
+
+	result, err := coll.UpdateOne(ctx, filter, update, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return fmt.Sprintf("%v %v %v", result.UpsertedCount, result.ModifiedCount, result.UpsertedID), nil
+}
+
+// SaveBulk can use SaveBulk(ctx, util.ToSliceAny(yourSliceObjects))
+func (r *MongoWithTransaction) SaveBulk(ctx context.Context, datas []any) (any, error) {
+
+	if len(datas) == 0 {
+		return nil, fmt.Errorf("data must > 0")
+	}
+
+	name := getCollectionNameFormat(datas[0])
+
+	coll := r.Database.Collection(name)
+
+	info, err := coll.InsertMany(ctx, datas)
+	if err != nil {
+		return nil, err
+	}
+
+	return info, nil
+}
+
+func (r *MongoWithTransaction) GetCollection(obj any) *mongo.Collection {
+	return r.Database.Collection(getCollectionNameFormat(obj))
+}
+
+func getCollectionNameFormat(obj any) string {
+
+	name := ""
+	if reflect.TypeOf(obj).Kind().String() == "ptr" {
+		name = reflect.TypeOf(obj).Elem().Name()
+	} else if reflect.TypeOf(obj).Kind().String() == "struct" {
+		name = reflect.TypeOf(obj).Name()
+	}
+
+	return util.SnakeCase(name)
+}
+
+func getCollectionFieldNameFormat(x string) string {
+	return util.SnakeCase(x)
+}

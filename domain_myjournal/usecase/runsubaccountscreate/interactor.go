@@ -29,7 +29,7 @@ func (r *runSubAccountsCreateInteractor) Execute(ctx context.Context, req Inport
 	subAccountObjs := make([]*entity.SubAccount, 0)
 
 	parentAccountMapUnique := map[entity.AccountCode]any{}
-	parentAccountList := make([]entity.AccountId, 0)
+	parentAccountList := make([]entity.AccountID, 0)
 	for _, account := range req.SubAccounts {
 
 		if _, exist := parentAccountMapUnique[account.ParentAccountCode]; exist {
@@ -37,7 +37,7 @@ func (r *runSubAccountsCreateInteractor) Execute(ctx context.Context, req Inport
 		}
 
 		parentAccountMapUnique[account.ParentAccountCode] = nil
-		parentAccountList = append(parentAccountList, entity.NewAccountId(req.WalletId, account.ParentAccountCode))
+		parentAccountList = append(parentAccountList, entity.NewAccountID(req.WalletId, account.ParentAccountCode))
 
 	}
 
@@ -62,7 +62,7 @@ func (r *runSubAccountsCreateInteractor) Execute(ctx context.Context, req Inport
 		}
 
 		subAccountObjs = append(subAccountObjs, &entity.SubAccount{
-			Id:            entity.NewSubAccountId(parentAccount.Id, account.Code),
+			ID:            entity.NewSubAccountID(parentAccount.ID, account.Code),
 			Code:          account.Code,
 			Name:          account.Name,
 			ParentAccount: parentAccount,

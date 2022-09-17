@@ -28,7 +28,7 @@ func (r *runJournalCreateInteractor) Execute(ctx context.Context, req InportRequ
 
 	balancesList := make([]*entity.SubAccountBalance, 0)
 
-	journalId := entity.NewJournalId(req.WalletId, req.UserId, req.Date)
+	journalId := entity.NewJournalID(req.WalletId, req.UserId, req.Date)
 
 	subAccountCodes := r.getSubAccountCodes(req.Transactions)
 
@@ -52,18 +52,16 @@ func (r *runJournalCreateInteractor) Execute(ctx context.Context, req InportRequ
 		return nil, err
 	}
 
-	fmt.Printf(">>>>>> %#v\n", balanceBySubAccountCodeMap)
-
 	balances, err := r.getBalance(req.Transactions, req.Date, balanceBySubAccountCodeMap, subAccountObjMap, journalId)
 	if err != nil {
 		return nil, err
 	}
 
 	journalObj := entity.Journal{
-		Id:          journalId,
+		ID:          journalId,
 		Date:        req.Date,
-		WalletId:    req.WalletId,
-		UserId:      req.UserId,
+		WalletID:    req.WalletId,
+		UserID:      req.UserId,
 		Description: req.Description,
 		Balances:    balances,
 	}
@@ -93,7 +91,7 @@ func (r runJournalCreateInteractor) getBalance(
 	date time.Time,
 	balanceBySubAccountCodeMap map[entity.SubAccountCode]entity.Money,
 	subAccountMap map[entity.SubAccountCode]entity.SubAccount,
-	journalId entity.JournalId,
+	journalId entity.JournalID,
 ) ([]*entity.SubAccountBalance, error) {
 
 	totalBalancePerDirection := map[entity.BalanceDirection]entity.Money{}
@@ -106,7 +104,7 @@ func (r runJournalCreateInteractor) getBalance(
 			return nil, fmt.Errorf("SubAccountCode %s is not exist", sab.SubAccountCode)
 		}
 
-		subAccountBalanceId := entity.NewSubAccountBalanceId(journalId, subAccount.Code)
+		subAccountBalanceId := entity.NewSubAccountBalanceID(journalId, subAccount.Code)
 
 		lastBalance, exist := balanceBySubAccountCodeMap[sab.SubAccountCode]
 		if !exist {
@@ -118,8 +116,8 @@ func (r runJournalCreateInteractor) getBalance(
 		amount := sab.Sign.GetNumberSign() * sab.Amount
 
 		subAccountBalancesResult = append(subAccountBalancesResult, &entity.SubAccountBalance{
-			Id:         subAccountBalanceId,
-			JournalId:  journalId,
+			ID:         subAccountBalanceId,
+			JournalID:  journalId,
 			Date:       date,
 			Amount:     amount,
 			Balance:    lastBalance + amount,

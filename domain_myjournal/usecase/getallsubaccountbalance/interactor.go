@@ -2,6 +2,7 @@ package getallsubaccountbalance
 
 import (
 	"context"
+	"myjournal/shared/util"
 )
 
 //go:generate mockery --name Outport -output mocks/
@@ -22,8 +23,13 @@ func (r *getAllSubaccountBalanceInteractor) Execute(ctx context.Context, req Inp
 
 	res := &InportResponse{}
 
-	// code your usecase definition here ...
-	//!
+	subAccountBalanceObjs, count, err := r.outport.FindAllSubAccountBalance(ctx, req.Page, req.Size, req.WalletId)
+	if err != nil {
+		return nil, err
+	}
+
+	res.Count = count
+	res.Items = util.ToSliceAny(subAccountBalanceObjs)
 
 	return res, nil
 }

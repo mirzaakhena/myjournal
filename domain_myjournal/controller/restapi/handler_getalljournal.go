@@ -2,26 +2,27 @@ package restapi
 
 import (
 	"context"
+	"myjournal/domain_myjournal/model/entity"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
 	"myjournal/domain_myjournal/usecase/getalljournal"
 	"myjournal/shared/infrastructure/logger"
-	"myjournal/shared/infrastructure/util"
 	"myjournal/shared/model/payload"
+	"myjournal/shared/util"
 )
 
 // getAllJournalHandler ...
 func (r *Controller) getAllJournalHandler() gin.HandlerFunc {
 
 	type request struct {
-		Page int `form:"page,omitempty,default=0"`
-		Size int `form:"size,omitempty,default=0"`
+		Page int64 `form:"page,omitempty,default=1"`
+		Size int64 `form:"size,omitempty,default=30"`
 	}
 
 	type response struct {
-		Count int   `json:"count"`
+		Count int64 `json:"count"`
 		Items []any `json:"items"`
 	}
 
@@ -39,6 +40,7 @@ func (r *Controller) getAllJournalHandler() gin.HandlerFunc {
 		}
 
 		var req getalljournal.InportRequest
+		req.WalletId = entity.WalletID(c.Param("walletId"))
 		req.Page = jsonReq.Page
 		req.Size = jsonReq.Size
 

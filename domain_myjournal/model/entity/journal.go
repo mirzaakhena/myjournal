@@ -5,17 +5,17 @@ import (
 	"time"
 )
 
-type JournalId string
+type JournalID string
 
-func NewJournalId(walletId WalletId, userId UserId, now time.Time) JournalId {
-	return JournalId(fmt.Sprintf("%s_%s_%s", walletId, userId, now.Format("060102150405")))
+func NewJournalID(walletId WalletID, userId UserID, now time.Time) JournalID {
+	return JournalID(fmt.Sprintf("%s_%s_%s", walletId, userId, now.Format("060102150405")))
 }
 
 type Journal struct {
-	Id          JournalId            `json:"id" bson:"_id"`
+	ID          JournalID            `json:"id" bson:"_id"`
 	Date        time.Time            `json:"date" bson:"date"`
-	WalletId    WalletId             `json:"walletId" bson:"wallet_id"  index:"-1"`
-	UserId      UserId               `json:"userId" bson:"user_id"`
+	WalletID    WalletID             `json:"walletId" bson:"wallet_id"  index:"-1"`
+	UserID      UserID               `json:"userId" bson:"user_id"`
 	Description string               `json:"description" bson:"description"`
 	Balances    []*SubAccountBalance `json:"balances" bson:"balances"`
 }

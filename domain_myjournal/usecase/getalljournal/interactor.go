@@ -2,6 +2,7 @@ package getalljournal
 
 import (
 	"context"
+	"myjournal/shared/util"
 )
 
 //go:generate mockery --name Outport -output mocks/
@@ -22,8 +23,13 @@ func (r *getAllJournalInteractor) Execute(ctx context.Context, req InportRequest
 
 	res := &InportResponse{}
 
-	// code your usecase definition here ...
-	//!
+	journalObjs, count, err := r.outport.FindAllJournal(ctx, req.Page, req.Size, req.WalletId)
+	if err != nil {
+		return nil, err
+	}
+
+	res.Count = count
+	res.Items = util.ToSliceAny(journalObjs)
 
 	return res, nil
 }
