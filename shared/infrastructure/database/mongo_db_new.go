@@ -42,7 +42,7 @@ func (g GetAllParam) Filter(key string, value any) GetAllParam {
 func NewDefaultParam() GetAllParam {
 	return GetAllParam{
 		page:   1,
-		size:   20,
+		size:   2000,
 		sort:   map[string]any{},
 		filter: map[string]any{},
 	}
@@ -53,7 +53,7 @@ type InsertOrUpdateRepo[T any] interface {
 }
 
 type InsertManyRepo[T any] interface {
-	InsertMany(objs ...T) error
+	InsertMany(objs ...*T) error
 }
 
 type GetOneRepo[T any] interface {
@@ -77,9 +77,9 @@ type Repository[T any] interface {
 	getTypeName() string
 }
 
-type Basic[T any] struct{}
+type basic[T any] struct{}
 
-func (b Basic[T]) getTypeName() string {
+func (b basic[T]) getTypeName() string {
 	var x T
 	return snakeCase(reflect.TypeOf(x).Name())
 }
@@ -102,12 +102,40 @@ func toSliceAny[T any](objs []T) []any {
 	return results
 }
 
-type mongoGateway[T any] struct {
-	Basic[T]
+type AdapterGateway[T any] struct {
+	basic[T]
+}
+
+func (g *AdapterGateway[T]) InsertOrUpdate(obj T) error {
+	return nil
+}
+
+func (g *AdapterGateway[T]) InsertMany(objs ...*T) error {
+	return nil
+}
+
+func (g *AdapterGateway[T]) GetOne(filter map[string]any, result *T) error {
+	return nil
+}
+
+func (g *AdapterGateway[T]) GetAll(param GetAllParam, results *[]T) (int64, error) {
+	return 0, nil
+}
+
+func (g *AdapterGateway[T]) GetAllEachItem(param GetAllParam, resultEachItem func(result T)) (int64, error) {
+	return 0, nil
+}
+
+type MongoGateway[T any] struct {
+	basic[T]
 	Database *mongo.Database
 }
 
-func NewMongoGateway[T any](uri, databaseName string) Repository[T] {
+func NewDatabase() *mongo.Database {
+
+	uri := "mongodb://localhost:27017/?readPreference=primary&ssl=false"
+
+	databaseName := "myjournal"
 
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 
@@ -121,12 +149,11 @@ func NewMongoGateway[T any](uri, databaseName string) Repository[T] {
 		panic(err)
 	}
 
-	return &mongoGateway[T]{
-		Database: client.Database(databaseName),
-	}
+	return client.Database(databaseName)
+
 }
 
-func (g *mongoGateway[T]) InsertOrUpdate(obj T) error {
+func (g *MongoGateway[T]) InsertOrUpdate(obj T) error {
 
 	name := g.getTypeName()
 
@@ -153,7 +180,7 @@ func (g *mongoGateway[T]) InsertOrUpdate(obj T) error {
 	return nil
 }
 
-func (g *mongoGateway[T]) InsertMany(objs ...T) error {
+func (g *MongoGateway[T]) InsertMany(objs ...*T) error {
 
 	if len(objs) == 0 {
 		return fmt.Errorf("objs must > 0")
@@ -172,7 +199,7 @@ func (g *mongoGateway[T]) InsertMany(objs ...T) error {
 	return nil
 }
 
-func (g *mongoGateway[T]) GetOne(filter map[string]any, result *T) error {
+func (g *MongoGateway[T]) GetOne(filter map[string]any, result *T) error {
 
 	name := g.getTypeName()
 
@@ -188,7 +215,7 @@ func (g *mongoGateway[T]) GetOne(filter map[string]any, result *T) error {
 	return nil
 }
 
-func (g *mongoGateway[T]) GetAll(param GetAllParam, results *[]T) (int64, error) {
+func (g *MongoGateway[T]) GetAll(param GetAllParam, results *[]T) (int64, error) {
 
 	name := g.getTypeName()
 
@@ -223,7 +250,7 @@ func (g *mongoGateway[T]) GetAll(param GetAllParam, results *[]T) (int64, error)
 	return count, nil
 }
 
-func (g *mongoGateway[T]) GetAllEachItem(param GetAllParam, resultEachItem func(result T)) (int64, error) {
+func (g *MongoGateway[T]) GetAllEachItem(param GetAllParam, resultEachItem func(result T)) (int64, error) {
 
 	name := g.getTypeName()
 

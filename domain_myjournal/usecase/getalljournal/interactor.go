@@ -2,6 +2,8 @@ package getalljournal
 
 import (
 	"context"
+	"myjournal/domain_myjournal/model/entity"
+	"myjournal/shared/infrastructure/database"
 	"myjournal/shared/util"
 )
 
@@ -23,13 +25,28 @@ func (r *getAllJournalInteractor) Execute(ctx context.Context, req InportRequest
 
 	res := &InportResponse{}
 
-	journalObjs, count, err := r.outport.FindAllJournal(ctx, req.Page, req.Size, req.WalletId)
+	//journalObjs, count, err := r.outport.FindAllJournal(ctx, req.Page, req.Size, req.WalletId)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//res.Count = count
+	//res.Items = util.ToSliceAny(journalObjs)
+
+	p := database.NewDefaultParam().
+		Page(req.Page).
+		Size(req.Size).
+		Filter("wallet_id", req.WalletId).
+		Sort("code", 1)
+
+	objs := make([]entity.Journal, 0)
+	count, err := r.outport.FindAllJournal(ctx).GetAll(p, &objs)
 	if err != nil {
 		return nil, err
 	}
 
 	res.Count = count
-	res.Items = util.ToSliceAny(journalObjs)
+	res.Items = util.ToSliceAny(objs)
 
 	return res, nil
 }

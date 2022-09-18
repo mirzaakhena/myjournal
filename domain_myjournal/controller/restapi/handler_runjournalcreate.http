@@ -28,9 +28,9 @@ POST http://localhost:8001/wallet/WLT01/journal
 {
   "description": "Beli Barang Lagi",
   "transactions": [
-    {"sign": "+", "amount": 300000,"subAccountCode": "UDIN"},
+    {"sign": "+", "amount": 500000,"subAccountCode": "UDIN"},
     {"sign": "-", "amount":  20000,"subAccountCode": "KAS_BESAR"},
-    {"sign": "+", "amount": 320000,"subAccountCode": "CAT"}
+    {"sign": "+", "amount": 520000,"subAccountCode": "CAT"}
   ]
 }
 

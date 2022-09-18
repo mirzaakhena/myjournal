@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"myjournal/domain_myjournal/model/entity"
-	"myjournal/domain_myjournal/model/repository"
+	"myjournal/shared/infrastructure/database"
 	"strings"
 )
 
@@ -29,7 +29,7 @@ func (r *runSubAccountsCreateInteractor) Execute(ctx context.Context, req Inport
 	subAccountObjs := make([]*entity.SubAccount, 0)
 
 	parentAccountMapUnique := map[entity.AccountCode]any{}
-	parentAccountList := make([]entity.AccountID, 0)
+	parentAccountIDList := make([]entity.AccountID, 0)
 	for _, account := range req.SubAccounts {
 
 		if _, exist := parentAccountMapUnique[account.ParentAccountCode]; exist {
@@ -37,13 +37,17 @@ func (r *runSubAccountsCreateInteractor) Execute(ctx context.Context, req Inport
 		}
 
 		parentAccountMapUnique[account.ParentAccountCode] = nil
-		parentAccountList = append(parentAccountList, entity.NewAccountID(req.WalletId, account.ParentAccountCode))
+		parentAccountIDList = append(parentAccountIDList, entity.NewAccountID(req.WalletId, account.ParentAccountCode))
 
 	}
 
-	parentAccountMap, err := r.outport.FindAccounts(ctx, repository.FindAccountsRequest{
-		WalletID:   req.WalletId,
-		AccountIds: parentAccountList,
+	p := database.NewDefaultParam().
+		Filter("wallet_id", req.WalletId).
+		Filter("_id", map[string]any{"$in": parentAccountIDList})
+
+	var parentAccountMap map[entity.AccountCode]entity.Account
+	_, err := r.outport.FindAccounts(ctx).GetAllEachItem(p, func(result entity.Account) {
+		parentAccountMap[result.Code] = result
 	})
 	if err != nil {
 		return nil, err
@@ -69,7 +73,7 @@ func (r *runSubAccountsCreateInteractor) Execute(ctx context.Context, req Inport
 		})
 	}
 
-	err = r.outport.SaveSubAccounts(ctx, subAccountObjs)
+	err = r.outport.SaveSubAccounts(ctx).InsertMany(subAccountObjs...)
 	if err != nil {
 		return nil, err
 	}

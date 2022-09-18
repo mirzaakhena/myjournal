@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"myjournal/domain_myjournal/model/entity"
 	"myjournal/domain_myjournal/model/repository"
+	"myjournal/shared/infrastructure/database"
 	"time"
 )
 
@@ -26,15 +27,20 @@ func (r *runJournalCreateInteractor) Execute(ctx context.Context, req InportRequ
 
 	res := &InportResponse{}
 
-	balancesList := make([]*entity.SubAccountBalance, 0)
+	//balancesList := make([]*entity.SubAccountBalance, 0)
 
 	journalId := entity.NewJournalID(req.WalletId, req.UserId, req.Date)
 
 	subAccountCodes := r.getSubAccountCodes(req.Transactions)
 
-	subAccountObjMap, err := r.outport.FindSubAccounts(ctx, repository.FindSubAccountsRequest{
-		WalletID:        req.WalletId,
-		SubAccountCodes: subAccountCodes,
+	subAccountObjMap := map[entity.SubAccountCode]entity.SubAccount{}
+
+	p := database.NewDefaultParam().
+		Filter("parent_account.wallet_id", req.WalletId).
+		Filter("code", map[string]any{"$in": subAccountCodes})
+
+	_, err := r.outport.FindSubAccounts(ctx).GetAllEachItem(p, func(result entity.SubAccount) {
+		subAccountObjMap[result.Code] = result
 	})
 	if err != nil {
 		return nil, err
@@ -71,14 +77,14 @@ func (r *runJournalCreateInteractor) Execute(ctx context.Context, req InportRequ
 		return nil, err
 	}
 
-	balancesList = append(balancesList, balances...)
+	//balancesList = append(balancesList, balances...)
 
-	err = r.outport.SaveJournal(ctx, &journalObj)
+	err = r.outport.SaveJournal(ctx).InsertOrUpdate(journalObj)
 	if err != nil {
 		return nil, err
 	}
 
-	err = r.outport.SaveSubAccountBalances(ctx, balancesList)
+	err = r.outport.SaveSubAccountBalances(ctx).InsertMany(balances...)
 	if err != nil {
 		return nil, err
 	}
