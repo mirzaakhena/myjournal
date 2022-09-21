@@ -6,7 +6,7 @@ import (
 
 // Outport of usecase
 type Outport interface {
-	repository.FindAllAccountRepo2
+	repository.FindAllAccountRepo
 
 	//database.GetAllRepo[entity.Account]
 }

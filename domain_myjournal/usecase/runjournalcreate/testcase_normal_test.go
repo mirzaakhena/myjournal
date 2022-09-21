@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"myjournal/domain_myjournal/model/entity"
 	"myjournal/domain_myjournal/model/repository"
-	"myjournal/shared/infrastructure/util"
+	"myjournal/shared/util"
 	"testing"
 	"time"
 )

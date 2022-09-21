@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"myjournal/domain_myjournal/model/entity"
-	"myjournal/shared/infrastructure/database"
+	"myjournal/domain_myjournal/model/repository"
 	"strings"
 )
 
@@ -41,13 +41,9 @@ func (r *runSubAccountsCreateInteractor) Execute(ctx context.Context, req Inport
 
 	}
 
-	p := database.NewDefaultParam().
-		Filter("wallet_id", req.WalletId).
-		Filter("_id", map[string]any{"$in": parentAccountIDList})
-
-	var parentAccountMap map[entity.AccountCode]entity.Account
-	_, err := r.outport.FindAccounts(ctx).GetAllEachItem(p, func(result entity.Account) {
-		parentAccountMap[result.Code] = result
+	parentAccountMap, err := r.outport.FindAccounts(ctx, repository.FindAccountsRequest{
+		WalletID:   req.WalletId,
+		AccountIds: parentAccountIDList,
 	})
 	if err != nil {
 		return nil, err
@@ -73,7 +69,7 @@ func (r *runSubAccountsCreateInteractor) Execute(ctx context.Context, req Inport
 		})
 	}
 
-	err = r.outport.SaveSubAccounts(ctx).InsertMany(subAccountObjs...)
+	err = r.outport.SaveSubAccounts(ctx, subAccountObjs)
 	if err != nil {
 		return nil, err
 	}

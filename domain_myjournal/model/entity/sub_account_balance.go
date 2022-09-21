@@ -14,6 +14,7 @@ func NewSubAccountBalanceID(journalId JournalID, subAccountCode SubAccountCode) 
 type SubAccountBalance struct {
 	ID         SubAccountBalanceID `json:"id" bson:"_id"`
 	JournalID  JournalID           `json:"journalId" bson:"journal_id" index:"-1"`
+	UserID     UserID              `json:"userId" bson:"user_id"`
 	SubAccount SubAccount          `json:"subAccount" bson:"sub_account"`
 	Date       time.Time           `json:"date" bson:"date"`
 	Amount     Money               `json:"amount" bson:"amount"`

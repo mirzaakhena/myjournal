@@ -2,7 +2,7 @@ package application
 
 import (
 	"myjournal/domain_myjournal/controller/restapi"
-	"myjournal/domain_myjournal/gateway/newprod"
+	"myjournal/domain_myjournal/gateway/simple"
 	"myjournal/domain_myjournal/usecase/getallaccount"
 	"myjournal/domain_myjournal/usecase/getallaccountbalance"
 	"myjournal/domain_myjournal/usecase/getalljournal"
@@ -45,7 +45,7 @@ func NewApp1() func() driver.RegistryContract {
 
 		httpHandler := server.NewGinHTTPHandler(log, cfg.Servers[appName].Address, appData)
 
-		datasource := newprod.NewGateway(log, appData, cfg)
+		datasource := simple.NewGateway(log, appData, cfg)
 
 		return &app1{
 			httpHandler: &httpHandler,

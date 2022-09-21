@@ -4,9 +4,9 @@ import "myjournal/domain_myjournal/model/repository"
 
 // Outport of usecase
 type Outport interface {
-	repository.SaveJournalRepo2
-	repository.SaveSubAccountBalancesRepo2
+	repository.SaveJournalRepo
+	repository.SaveSubAccountBalancesRepo
 	repository.FindLastSubAccountBalancesRepo
-	repository.FindSubAccountsRepo2
+	repository.FindSubAccountsRepo
 	//repository.SaveAccountBalancesRepo2
 }

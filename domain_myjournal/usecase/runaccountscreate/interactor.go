@@ -31,7 +31,7 @@ func (r *runAccountsCreateInteractor) Execute(ctx context.Context, req InportReq
 	accountObjs := make([]*entity.Account, 0)
 	accountObjs = r.traceAccounts(ctx, accountObjs, req.WalletId, 1, req.RootAccounts, "", "")
 
-	err := r.outport.SaveAccounts(ctx).InsertMany(accountObjs...)
+	err := r.outport.SaveAccounts(ctx, accountObjs)
 	if err != nil {
 		return nil, err
 	}

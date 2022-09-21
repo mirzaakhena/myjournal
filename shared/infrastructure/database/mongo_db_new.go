@@ -35,6 +35,11 @@ func (g GetAllParam) Sort(field string, sort any) GetAllParam {
 }
 
 func (g GetAllParam) Filter(key string, value any) GetAllParam {
+
+	if reflect.ValueOf(value).String() == "" {
+		return g
+	}
+
 	g.filter[key] = value
 	return g
 }
@@ -48,8 +53,10 @@ func NewDefaultParam() GetAllParam {
 	}
 }
 
+// =======================================
+
 type InsertOrUpdateRepo[T any] interface {
-	InsertOrUpdate(obj T) error
+	InsertOrUpdate(obj *T) error
 }
 
 type InsertManyRepo[T any] interface {
@@ -61,7 +68,7 @@ type GetOneRepo[T any] interface {
 }
 
 type GetAllRepo[T any] interface {
-	GetAll(param GetAllParam, results *[]T) (int64, error)
+	GetAll(param GetAllParam, results *[]*T) (int64, error)
 }
 
 type GetAllEachItemRepo[T any] interface {
@@ -74,15 +81,13 @@ type Repository[T any] interface {
 	GetOneRepo[T]
 	GetAllRepo[T]
 	GetAllEachItemRepo[T]
-	getTypeName() string
+	//GetCollection() *mongo.Collection
+
+	GetTypeName() string
 }
 
-type basic[T any] struct{}
-
-func (b basic[T]) getTypeName() string {
-	var x T
-	return snakeCase(reflect.TypeOf(x).Name())
-}
+//type basic[T any] struct{}
+//
 
 var matchFirstCapSnakeCase = regexp.MustCompile("(.)([A-Z][a-z]+)")
 var matchAllCapSnakeCase = regexp.MustCompile("([a-z\\d])([A-Z])")
@@ -102,33 +107,38 @@ func toSliceAny[T any](objs []T) []any {
 	return results
 }
 
-type AdapterGateway[T any] struct {
-	basic[T]
-}
+//type AdapterGateway[T any] struct{}
+//
+//func (g *AdapterGateway[T]) InsertOrUpdate(obj *T) error {
+//	return nil
+//}
+//
+//func (g *AdapterGateway[T]) InsertMany(objs ...*T) error {
+//	return nil
+//}
+//
+//func (g *AdapterGateway[T]) GetOne(filter map[string]any, result *T) error {
+//	return nil
+//}
+//
+//func (g *AdapterGateway[T]) GetAll(param GetAllParam, results *[]*T) (int64, error) {
+//	return 0, nil
+//}
+//
+//func (g *AdapterGateway[T]) GetAllEachItem(param GetAllParam, resultEachItem func(result T)) (int64, error) {
+//	return 0, nil
+//}
 
-func (g *AdapterGateway[T]) InsertOrUpdate(obj T) error {
-	return nil
-}
-
-func (g *AdapterGateway[T]) InsertMany(objs ...*T) error {
-	return nil
-}
-
-func (g *AdapterGateway[T]) GetOne(filter map[string]any, result *T) error {
-	return nil
-}
-
-func (g *AdapterGateway[T]) GetAll(param GetAllParam, results *[]T) (int64, error) {
-	return 0, nil
-}
-
-func (g *AdapterGateway[T]) GetAllEachItem(param GetAllParam, resultEachItem func(result T)) (int64, error) {
-	return 0, nil
-}
+// =======================================
 
 type MongoGateway[T any] struct {
-	basic[T]
 	Database *mongo.Database
+}
+
+func NewMongoGateway[T any](db *mongo.Database) *MongoGateway[T] {
+	return &MongoGateway[T]{
+		Database: db,
+	}
 }
 
 func NewDatabase() *mongo.Database {
@@ -153,11 +163,20 @@ func NewDatabase() *mongo.Database {
 
 }
 
-func (g *MongoGateway[T]) InsertOrUpdate(obj T) error {
+func (g *MongoGateway[T]) GetTypeName() string {
+	var x T
+	return snakeCase(reflect.TypeOf(x).Name())
+}
 
-	name := g.getTypeName()
+//func (g *MongoGateway[T]) GetCollection() *mongo.Collection {
+//	var x T
+//	name := snakeCase(reflect.TypeOf(x).Name())
+//	return g.Database.Collection(name)
+//}
 
-	sf, exist := reflect.TypeOf(obj).FieldByName("ID")
+func (g *MongoGateway[T]) InsertOrUpdate(obj *T) error {
+
+	sf, exist := reflect.TypeOf(obj).Elem().FieldByName("ID")
 	if !exist {
 		return fmt.Errorf("field ID as primary key is not found in %s", reflect.TypeOf(obj).Name())
 	}
@@ -167,11 +186,11 @@ func (g *MongoGateway[T]) InsertOrUpdate(obj T) error {
 		return fmt.Errorf("field ID must have tag `bson:\"_id\"`")
 	}
 
-	filter := bson.D{{"_id", reflect.ValueOf(obj).FieldByName("ID").Interface()}}
+	filter := bson.D{{"_id", reflect.ValueOf(obj).Elem().FieldByName("ID").Interface()}}
 	update := bson.D{{"$set", obj}}
 	opts := options.Update().SetUpsert(true)
 
-	coll := g.Database.Collection(name)
+	coll := g.Database.Collection(g.GetTypeName())
 	_, err := coll.UpdateOne(context.TODO(), filter, update, opts)
 	if err != nil {
 		return err
@@ -186,11 +205,9 @@ func (g *MongoGateway[T]) InsertMany(objs ...*T) error {
 		return fmt.Errorf("objs must > 0")
 	}
 
-	name := g.getTypeName()
-
 	opts := options.InsertMany().SetOrdered(false)
 
-	coll := g.Database.Collection(name)
+	coll := g.Database.Collection(g.GetTypeName())
 	_, err := coll.InsertMany(context.TODO(), toSliceAny(objs), opts)
 	if err != nil {
 		return err
@@ -201,9 +218,7 @@ func (g *MongoGateway[T]) InsertMany(objs ...*T) error {
 
 func (g *MongoGateway[T]) GetOne(filter map[string]any, result *T) error {
 
-	name := g.getTypeName()
-
-	coll := g.Database.Collection(name)
+	coll := g.Database.Collection(g.GetTypeName())
 
 	singleResult := coll.FindOne(context.TODO(), filter)
 
@@ -215,11 +230,9 @@ func (g *MongoGateway[T]) GetOne(filter map[string]any, result *T) error {
 	return nil
 }
 
-func (g *MongoGateway[T]) GetAll(param GetAllParam, results *[]T) (int64, error) {
+func (g *MongoGateway[T]) GetAll(param GetAllParam, results *[]*T) (int64, error) {
 
-	name := g.getTypeName()
-
-	coll := g.Database.Collection(name)
+	coll := g.Database.Collection(g.GetTypeName())
 
 	skip := param.size * (param.page - 1)
 	limit := param.size
@@ -252,9 +265,7 @@ func (g *MongoGateway[T]) GetAll(param GetAllParam, results *[]T) (int64, error)
 
 func (g *MongoGateway[T]) GetAllEachItem(param GetAllParam, resultEachItem func(result T)) (int64, error) {
 
-	name := g.getTypeName()
-
-	coll := g.Database.Collection(name)
+	coll := g.Database.Collection(g.GetTypeName())
 
 	skip := param.size * (param.page - 1)
 	limit := param.size

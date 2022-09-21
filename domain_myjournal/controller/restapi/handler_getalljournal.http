@@ -1,1 +1,1 @@
-GET http://localhost:8001/wallet/WLT01/journal
+GET http://localhost:8001/wallet/WLT01/journal?description=saldo

@@ -4,7 +4,6 @@ import "myjournal/domain_myjournal/model/repository"
 
 // Outport of usecase
 type Outport interface {
-	repository.FindAllJournalRepo2
-
-	//database.GetAllRepo[entity.Journal]
+	repository.FindAllJournalRepo
+	repository.FindAllSubAccountBalanceByJournalIDRepo
 }

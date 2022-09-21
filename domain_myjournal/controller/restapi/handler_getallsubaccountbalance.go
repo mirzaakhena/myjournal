@@ -2,10 +2,9 @@ package restapi
 
 import (
 	"context"
+	"github.com/gin-gonic/gin"
 	"myjournal/domain_myjournal/model/entity"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 
 	"myjournal/domain_myjournal/usecase/getallsubaccountbalance"
 	"myjournal/shared/infrastructure/logger"
@@ -17,8 +16,7 @@ import (
 func (r *Controller) getAllSubaccountBalanceHandler() gin.HandlerFunc {
 
 	type request struct {
-		Page int64 `form:"page,omitempty,default=1"`
-		Size int64 `form:"size,omitempty,default=30"`
+		getallsubaccountbalance.InportRequest
 	}
 
 	type response struct {
@@ -40,9 +38,8 @@ func (r *Controller) getAllSubaccountBalanceHandler() gin.HandlerFunc {
 		}
 
 		var req getallsubaccountbalance.InportRequest
-		req.WalletId = entity.WalletID(c.Param("walletId"))
-		req.Page = jsonReq.Page
-		req.Size = jsonReq.Size
+		req.FindAllSubAccountBalanceRequest = jsonReq.FindAllSubAccountBalanceRequest
+		req.WalletID = entity.WalletID(c.Param("walletId"))
 
 		r.Log.Info(ctx, util.MustJSON(req))
 
@@ -55,7 +52,7 @@ func (r *Controller) getAllSubaccountBalanceHandler() gin.HandlerFunc {
 
 		var jsonRes response
 		jsonRes.Count = res.Count
-		jsonRes.Items = res.Items
+		jsonRes.Items = util.ToSliceAny(res.Items)
 
 		r.Log.Info(ctx, util.MustJSON(jsonRes))
 		c.JSON(http.StatusOK, payload.NewSuccessResponse(jsonRes, traceID))

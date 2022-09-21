@@ -17,8 +17,7 @@ import (
 func (r *Controller) getAllJournalHandler() gin.HandlerFunc {
 
 	type request struct {
-		Page int64 `form:"page,omitempty,default=1"`
-		Size int64 `form:"size,omitempty,default=30"`
+		getalljournal.InportRequest
 	}
 
 	type response struct {
@@ -40,9 +39,8 @@ func (r *Controller) getAllJournalHandler() gin.HandlerFunc {
 		}
 
 		var req getalljournal.InportRequest
-		req.WalletId = entity.WalletID(c.Param("walletId"))
-		req.Page = jsonReq.Page
-		req.Size = jsonReq.Size
+		req.FindAllJournalRequest = jsonReq.FindAllJournalRequest
+		req.WalletID = entity.WalletID(c.Param("walletId"))
 
 		r.Log.Info(ctx, util.MustJSON(req))
 
@@ -55,7 +53,7 @@ func (r *Controller) getAllJournalHandler() gin.HandlerFunc {
 
 		var jsonRes response
 		jsonRes.Count = res.Count
-		jsonRes.Items = res.Items
+		jsonRes.Items = util.ToSliceAny(res.Items)
 
 		r.Log.Info(ctx, util.MustJSON(jsonRes))
 		c.JSON(http.StatusOK, payload.NewSuccessResponse(jsonRes, traceID))

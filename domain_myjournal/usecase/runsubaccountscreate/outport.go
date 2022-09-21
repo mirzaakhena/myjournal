@@ -4,8 +4,8 @@ import "myjournal/domain_myjournal/model/repository"
 
 // Outport of usecase
 type Outport interface {
-	repository.SaveSubAccountsRepo2
-	repository.FindAccountsRepo2
+	repository.SaveSubAccountsRepo
+	repository.FindAccountsRepo
 
 	//database.GetAllRepo[entity.Account]
 	//database.InsertManyRepo[entity.SubAccount]

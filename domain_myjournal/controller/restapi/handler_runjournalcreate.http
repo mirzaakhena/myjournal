@@ -45,3 +45,28 @@ POST http://localhost:8001/wallet/WLT01/journal
     {"sign": "-", "amount": 120000,"subAccountCode": "KAS_BESAR"}
   ]
 }
+
+###
+
+POST http://localhost:8001/wallet/WLT01/journal
+
+{
+  "description": "Bayar Utang",
+  "transactions": [
+    {"sign": "+", "amount": 20000,"subAccountCode": "UDIN"},
+    {"sign": "+", "amount": 15000,"subAccountCode": "KAS_KECIL"},
+    {"sign": "+", "amount": 5000,"subAccountCode": "KAS_BESAR"}
+  ]
+}
+
+###
+
+POST http://localhost:8001/wallet/WLT01/journal
+
+{
+  "description": "Bayar Utang",
+  "transactions": [
+    {"sign": "-", "amount": 500,"subAccountCode": "UDIN"},
+    {"sign": "-", "amount": 500,"subAccountCode": "KAS_KECIL"}
+  ]
+}
