@@ -8,8 +8,8 @@ import (
 
 	"myjournal/domain_myjournal/usecase/runwalletcreate"
 	"myjournal/shared/infrastructure/logger"
-	"myjournal/shared/infrastructure/util"
 	"myjournal/shared/model/payload"
+	"myjournal/shared/util"
 )
 
 // runWalletCreateHandler ...

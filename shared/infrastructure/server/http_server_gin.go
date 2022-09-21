@@ -1,6 +1,8 @@
 package server
 
 import (
+	"io/fs"
+	"myjournal/web"
 	"net/http"
 	"time"
 
@@ -26,8 +28,8 @@ func NewGinHTTPHandler(log logger.Logger, address string, appData driver.Applica
 		c.JSON(http.StatusOK, appData)
 	})
 
-	// contentStatic, _ := fs.Sub(web.StaticFiles, "dist")
-	// router.StaticFS("/web", http.FS(contentStatic))
+	contentStatic, _ := fs.Sub(web.StaticFiles, "dist")
+	router.StaticFS("/web", http.FS(contentStatic))
 
 	// CORS
 	router.Use(cors.New(cors.Config{

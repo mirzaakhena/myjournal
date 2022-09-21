@@ -6,7 +6,7 @@ import "myjournal/domain_myjournal/model/repository"
 type Outport interface {
 	repository.SaveJournalRepo
 	repository.SaveSubAccountBalancesRepo
-	repository.SaveAccountBalancesRepo
 	repository.FindLastSubAccountBalancesRepo
 	repository.FindSubAccountsRepo
+	//repository.SaveAccountBalancesRepo2
 }

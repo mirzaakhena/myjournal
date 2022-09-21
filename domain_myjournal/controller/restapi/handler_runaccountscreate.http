@@ -1,7 +1,6 @@
-POST http://localhost:8001/accounts
+POST http://localhost:8001/wallet/WLT01/accounts
 
 {
-  "walletId": "WLT01",
   "accounts": [
     {
       "side": "ACTIVA",

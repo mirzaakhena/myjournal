@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"myjournal/domain_myjournal/model/entity"
 	"myjournal/domain_myjournal/model/repository"
-	"myjournal/shared/infrastructure/util"
+	"myjournal/shared/util"
 	"testing"
 	"time"
 )
@@ -28,17 +28,13 @@ func TestCaseNormal(t *testing.T) {
 	}
 
 	res, err := NewUsecase(mockDatasource).Execute(context.Background(), InportRequest{
-		Date:     time.Now(),
-		WalletId: "WL01",
-		UserId:   "US01",
-		Journals: []Journal{
-			{
-				Description: "Desc01",
-				Transactions: []Transaction{
-					{Sign: "+", SubAccountCode: "HR001", Amount: 5000},
-					{Sign: "+", SubAccountCode: "UT001", Amount: 5000},
-				},
-			},
+		Date:        time.Now(),
+		WalletId:    "WL01",
+		UserId:      "US01",
+		Description: "Desc01",
+		Transactions: []Transaction{
+			{Sign: "+", SubAccountCode: "HR001", Amount: 5000},
+			{Sign: "+", SubAccountCode: "UT001", Amount: 5000},
 		},
 	})
 
@@ -48,8 +44,8 @@ func TestCaseNormal(t *testing.T) {
 
 }
 
-func (r *mockOutportNormal) SaveJournal(ctx context.Context, objs []*entity.Journal) error {
-	r.t.Logf("Save Journal %v", util.MustJSON(objs))
+func (r *mockOutportNormal) SaveJournal(ctx context.Context, obj *entity.Journal) error {
+	r.t.Logf("Save Journal %v", util.MustJSON(obj))
 
 	return nil
 }
@@ -68,67 +64,25 @@ func (r *mockOutportNormal) SaveAccountBalances(ctx context.Context, objs []*ent
 	return nil
 }
 
-func (r *mockOutportNormal) FindLastSubAccountBalances(ctx context.Context, req repository.FindLastSubAccountBalancesRepoRequest) (map[entity.SubAccountCode]*entity.SubAccountBalance, error) {
+func (r *mockOutportNormal) FindLastSubAccountBalances(ctx context.Context, req repository.FindLastSubAccountBalancesRequest) (map[entity.SubAccountCode]entity.Money, error) {
 	r.t.Logf("Transactions %v", util.MustJSON(req))
 
-	return map[entity.SubAccountCode]*entity.SubAccountBalance{
-		"HR001": {
-			Id:        "",
-			JournalId: "",
-			SubAccount: entity.SubAccount{
-				Id:   "",
-				Code: "HR001",
-				Name: "Harta",
-				ParentAccount: entity.Account{
-					Id:       "",
-					WalletId: "",
-					Code:     "HARTA",
-					Name:     "Harta",
-					Level:    0,
-					Side:     entity.AccountSideActiva,
-				},
-			},
-			Date:      r.Now,
-			Amount:    0,
-			Balance:   6200,
-			Sequence:  0,
-			Direction: "",
-		},
-		"UT001": {
-			Id:        "",
-			JournalId: "",
-			SubAccount: entity.SubAccount{
-				Id:   "",
-				Code: "UT001",
-				Name: "Utang",
-				ParentAccount: entity.Account{
-					Id:       "",
-					WalletId: "",
-					Code:     "UTANG",
-					Name:     "Utang",
-					Level:    0,
-					Side:     entity.AccountSidePassiva,
-				},
-			},
-			Date:      r.Now,
-			Amount:    0,
-			Balance:   12500,
-			Sequence:  0,
-			Direction: "",
-		},
+	return map[entity.SubAccountCode]entity.Money{
+		"HR001": 20000,
+		"UT001": 32000,
 	}, nil
 }
 
-func (r *mockOutportNormal) FindSubAccounts(ctx context.Context, objs []entity.SubAccountCode) (map[entity.SubAccountCode]entity.SubAccount, error) {
-	r.t.Logf("SubAccounts %v", util.MustJSON(objs))
+func (r *mockOutportNormal) FindSubAccounts(ctx context.Context, req repository.FindSubAccountsRequest) (map[entity.SubAccountCode]entity.SubAccount, error) {
+	r.t.Logf("SubAccounts %v", util.MustJSON(req))
 
 	return map[entity.SubAccountCode]entity.SubAccount{
 		"HR001": {
-			Id:   "",
+			ID:   "",
 			Code: "HR001",
 			Name: "Harta",
 			ParentAccount: entity.Account{
-				Id:       "",
+				ID:       "",
 				WalletId: "",
 				Code:     "HARTA",
 				Name:     "Harta",
@@ -137,11 +91,11 @@ func (r *mockOutportNormal) FindSubAccounts(ctx context.Context, objs []entity.S
 			},
 		},
 		"UT001": {
-			Id:   "",
+			ID:   "",
 			Code: "UT001",
 			Name: "Utang",
 			ParentAccount: entity.Account{
-				Id:       "",
+				ID:       "",
 				WalletId: "",
 				Code:     "UTANG",
 				Name:     "Utang",

@@ -2,26 +2,25 @@ package restapi
 
 import (
 	"context"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"myjournal/domain_myjournal/model/entity"
+	"net/http"
 
 	"myjournal/domain_myjournal/usecase/getallsubaccountbalance"
 	"myjournal/shared/infrastructure/logger"
-	"myjournal/shared/infrastructure/util"
 	"myjournal/shared/model/payload"
+	"myjournal/shared/util"
 )
 
 // getAllSubaccountBalanceHandler ...
 func (r *Controller) getAllSubaccountBalanceHandler() gin.HandlerFunc {
 
 	type request struct {
-		Page int `form:"page,omitempty,default=0"`
-		Size int `form:"size,omitempty,default=0"`
+		getallsubaccountbalance.InportRequest
 	}
 
 	type response struct {
-		Count int   `json:"count"`
+		Count int64 `json:"count"`
 		Items []any `json:"items"`
 	}
 
@@ -39,8 +38,8 @@ func (r *Controller) getAllSubaccountBalanceHandler() gin.HandlerFunc {
 		}
 
 		var req getallsubaccountbalance.InportRequest
-		req.Page = jsonReq.Page
-		req.Size = jsonReq.Size
+		req.FindAllSubAccountBalanceRequest = jsonReq.FindAllSubAccountBalanceRequest
+		req.WalletID = entity.WalletID(c.Param("walletId"))
 
 		r.Log.Info(ctx, util.MustJSON(req))
 
@@ -53,7 +52,7 @@ func (r *Controller) getAllSubaccountBalanceHandler() gin.HandlerFunc {
 
 		var jsonRes response
 		jsonRes.Count = res.Count
-		jsonRes.Items = res.Items
+		jsonRes.Items = util.ToSliceAny(res.Items)
 
 		r.Log.Info(ctx, util.MustJSON(jsonRes))
 		c.JSON(http.StatusOK, payload.NewSuccessResponse(jsonRes, traceID))

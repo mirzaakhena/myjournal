@@ -7,4 +7,6 @@ import (
 // Outport of usecase
 type Outport interface {
 	repository.SaveAccountsRepo
+
+	//database.InsertManyRepo[entity.Account]
 }

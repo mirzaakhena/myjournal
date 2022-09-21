@@ -2,26 +2,26 @@ package restapi
 
 import (
 	"context"
+	"myjournal/domain_myjournal/model/entity"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
 	"myjournal/domain_myjournal/usecase/getalljournal"
 	"myjournal/shared/infrastructure/logger"
-	"myjournal/shared/infrastructure/util"
 	"myjournal/shared/model/payload"
+	"myjournal/shared/util"
 )
 
 // getAllJournalHandler ...
 func (r *Controller) getAllJournalHandler() gin.HandlerFunc {
 
 	type request struct {
-		Page int `form:"page,omitempty,default=0"`
-		Size int `form:"size,omitempty,default=0"`
+		getalljournal.InportRequest
 	}
 
 	type response struct {
-		Count int   `json:"count"`
+		Count int64 `json:"count"`
 		Items []any `json:"items"`
 	}
 
@@ -39,8 +39,8 @@ func (r *Controller) getAllJournalHandler() gin.HandlerFunc {
 		}
 
 		var req getalljournal.InportRequest
-		req.Page = jsonReq.Page
-		req.Size = jsonReq.Size
+		req.FindAllJournalRequest = jsonReq.FindAllJournalRequest
+		req.WalletID = entity.WalletID(c.Param("walletId"))
 
 		r.Log.Info(ctx, util.MustJSON(req))
 
@@ -53,7 +53,7 @@ func (r *Controller) getAllJournalHandler() gin.HandlerFunc {
 
 		var jsonRes response
 		jsonRes.Count = res.Count
-		jsonRes.Items = res.Items
+		jsonRes.Items = util.ToSliceAny(res.Items)
 
 		r.Log.Info(ctx, util.MustJSON(jsonRes))
 		c.JSON(http.StatusOK, payload.NewSuccessResponse(jsonRes, traceID))

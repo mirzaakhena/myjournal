@@ -2,22 +2,23 @@ package restapi
 
 import (
 	"context"
+	"myjournal/domain_myjournal/model/entity"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
 	"myjournal/domain_myjournal/usecase/getallaccountbalance"
 	"myjournal/shared/infrastructure/logger"
-	"myjournal/shared/infrastructure/util"
 	"myjournal/shared/model/payload"
+	"myjournal/shared/util"
 )
 
 // getAllAccountBalanceHandler ...
 func (r *Controller) getAllAccountBalanceHandler() gin.HandlerFunc {
 
 	type request struct {
-		Page int `form:"page,omitempty,default=0"`
-		Size int `form:"size,omitempty,default=0"`
+		Page int `form:"page,omitempty,default=1"`
+		Size int `form:"size,omitempty,default=30"`
 	}
 
 	type response struct {
@@ -39,6 +40,7 @@ func (r *Controller) getAllAccountBalanceHandler() gin.HandlerFunc {
 		}
 
 		var req getallaccountbalance.InportRequest
+		req.WalletId = entity.WalletID(c.Param("walletId"))
 		req.Page = jsonReq.Page
 		req.Size = jsonReq.Size
 

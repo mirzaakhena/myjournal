@@ -17,7 +17,7 @@ type Account struct {
 }
 
 type InportRequest struct {
-	WalletId     entity.WalletId `json:"walletId"`
+	WalletId     entity.WalletID `json:"-"`
 	RootAccounts []Account       `json:"accounts"`
 }
 

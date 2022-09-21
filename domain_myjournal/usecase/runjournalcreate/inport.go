@@ -11,8 +11,8 @@ type Inport usecase.Inport[context.Context, InportRequest, InportResponse]
 
 // InportRequest is request payload to run the usecase
 type InportRequest struct {
-	WalletId     entity.WalletId `json:"-"`
-	UserId       entity.UserId   `json:"-"`
+	WalletId     entity.WalletID `json:"-"`
+	UserId       entity.UserID   `json:"-"`
 	Date         time.Time       `json:"-"`
 	Description  string          `json:"description,omitempty"`
 	Transactions []Transaction   `json:"transactions"`

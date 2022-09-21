@@ -2,15 +2,16 @@ package restapi
 
 import (
 	"context"
-	"github.com/gin-gonic/gin"
 	"myjournal/domain_myjournal/model/entity"
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"myjournal/domain_myjournal/usecase/runjournalcreate"
 	"myjournal/shared/infrastructure/logger"
-	"myjournal/shared/infrastructure/util"
 	"myjournal/shared/model/payload"
+	"myjournal/shared/util"
 )
 
 // runJournalCreateHandler ...
@@ -39,8 +40,8 @@ func (r *Controller) runJournalCreateHandler() gin.HandlerFunc {
 		var req runjournalcreate.InportRequest
 		req = jsonReq.InportRequest
 		req.Date = time.Now()
-		req.WalletId = entity.WalletId(c.Param("walletId"))
-		req.UserId = entity.UserId(c.GetString("userId"))
+		req.WalletId = entity.WalletID(c.Param("walletId"))
+		req.UserId = entity.UserID(c.GetString("userId"))
 
 		r.Log.Info(ctx, util.MustJSON(req))
 

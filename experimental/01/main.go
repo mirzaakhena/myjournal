@@ -6,11 +6,64 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"myjournal/shared/infrastructure/database"
-	"myjournal/shared/infrastructure/util"
+	"myjournal/shared/util"
 	"time"
 )
 
+type GetAllParam struct {
+	Page   int64
+	Size   int64
+	Sort   bson.M
+	Filter bson.M
+}
+
+type Repository[T any] interface {
+	Save(obj T) error
+	GetOne(id string, result T) error
+	GetAll(param GetAllParam, results []T) (int64, error)
+	GetAllEachItem(param GetAllParam, eachItem func(result T)) (int64, error)
+}
+
+type gateway[T any] struct {
+	Repository[T]
+}
+
+func NewGateway[T any]() Repository[T] {
+	return &gateway[T]{}
+}
+
+func (g *gateway[T]) Save(obj T) error {
+	return nil
+}
+func (g *gateway[T]) GetOne(id string, result T) error {
+	return nil
+}
+func (g *gateway[T]) GetAll(param GetAllParam, results []T) (int64, error) {
+	return 0, nil
+}
+func (g *gateway[T]) GetAllEachItem(param GetAllParam, eachItem func(result T)) (int64, error) {
+	return 0, nil
+}
+
+type TheEntityOne struct {
+}
+
+type TheEntityTwo struct {
+}
+
 func main() {
+
+	x := NewGateway[TheEntityTwo]()
+
+	two := TheEntityTwo{}
+	err := x.Save(two)
+	if err != nil {
+		return
+	}
+
+}
+
+func coba1() {
 
 	const databaseName = "myjournal"
 

@@ -5,15 +5,16 @@ import (
 	"time"
 )
 
-type SubAccountBalanceId string
+type SubAccountBalanceID string
 
-func NewSubAccountBalanceId(journalId JournalId, subAccountCode SubAccountCode) SubAccountBalanceId {
-	return SubAccountBalanceId(fmt.Sprintf("%s_%s", journalId, subAccountCode))
+func NewSubAccountBalanceID(journalId JournalID, subAccountCode SubAccountCode) SubAccountBalanceID {
+	return SubAccountBalanceID(fmt.Sprintf("%s_%s", journalId, subAccountCode))
 }
 
 type SubAccountBalance struct {
-	Id         SubAccountBalanceId `json:"id" bson:"_id"`
-	JournalId  JournalId           `json:"journalId" bson:"journal_id" index:"-1"`
+	ID         SubAccountBalanceID `json:"id" bson:"_id"`
+	JournalID  JournalID           `json:"journalId" bson:"journal_id" index:"-1"`
+	UserID     UserID              `json:"userId" bson:"user_id"`
 	SubAccount SubAccount          `json:"subAccount" bson:"sub_account"`
 	Date       time.Time           `json:"date" bson:"date"`
 	Amount     Money               `json:"amount" bson:"amount"`

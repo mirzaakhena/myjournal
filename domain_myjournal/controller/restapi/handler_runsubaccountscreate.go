@@ -2,14 +2,15 @@ package restapi
 
 import (
 	"context"
+	"myjournal/domain_myjournal/model/entity"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
 	"myjournal/domain_myjournal/usecase/runsubaccountscreate"
 	"myjournal/shared/infrastructure/logger"
-	"myjournal/shared/infrastructure/util"
 	"myjournal/shared/model/payload"
+	"myjournal/shared/util"
 )
 
 // runSubAccountsCreateHandler ...
@@ -37,6 +38,7 @@ func (r *Controller) runSubAccountsCreateHandler() gin.HandlerFunc {
 
 		var req runsubaccountscreate.InportRequest
 		req = jsonReq.InportRequest
+		req.WalletId = entity.WalletID(c.Param("walletId"))
 
 		r.Log.Info(ctx, util.MustJSON(req))
 

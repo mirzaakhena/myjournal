@@ -1,12 +1,12 @@
 package entity
 
-type WalletId string
+type WalletID string
 
-func (u WalletId) String() string {
+func (u WalletID) String() string {
 	return string(u)
 }
 
 type Wallet struct {
-	Id   WalletId `json:"id" bson:"id"`
+	ID   WalletID `json:"id" bson:"id"`
 	Name string   `json:"name" bson:"name"`
 }

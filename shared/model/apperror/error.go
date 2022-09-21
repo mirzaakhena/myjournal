@@ -42,9 +42,9 @@ func (u ErrorType) Code() string {
 
 // Var add generic variable value to the error message
 // for example you have
-// UserNotFoundError ErrorType = "ER1092 UserId with name %s is not found"
+// UserNotFoundError ErrorType = "ER1092 UserID with name %s is not found"
 // Then you can insert the name
-// UserNotFoundError.Var("mirza") --> "UserId with name mirza is not found"
+// UserNotFoundError.Var("mirza") --> "UserID with name mirza is not found"
 func (u ErrorType) Var(params ...any) ErrorType {
 	return ErrorType(fmt.Sprintf(u.String(), params...))
 }
