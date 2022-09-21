@@ -40,10 +40,10 @@ func (r subAccountBalanceRepoImpl) SaveSubAccountBalances(ctx context.Context, o
 func (r subAccountBalanceRepoImpl) FindLastSubAccountBalances(ctx context.Context, req repository.FindLastSubAccountBalancesRequest) (map[entity.SubAccountCode]entity.Money, error) {
 	r.log.Info(ctx, "called")
 
-	var subAccountCodes bson.A
-	for _, val := range req.SubAccountCodes {
-		subAccountCodes = append(subAccountCodes, val)
-	}
+	//var subAccountCodes bson.A
+	//for _, val := range req.SubAccountCodes {
+	//	subAccountCodes = append(subAccountCodes, val)
+	//}
 
 	//---
 	matchStage := bson.D{
@@ -51,7 +51,7 @@ func (r subAccountBalanceRepoImpl) FindLastSubAccountBalances(ctx context.Contex
 			"$match",
 			bson.M{
 				"sub_account.parent_account.wallet_id": req.WalletID,
-				"sub_account.code":                     bson.M{"$in": subAccountCodes},
+				"sub_account.code":                     bson.M{"$in": SliceToBsonA(req.SubAccountCodes)},
 			},
 		},
 	}
@@ -154,16 +154,16 @@ func (r subAccountBalanceRepoImpl) FindAllSubAccountBalance(ctx context.Context,
 func (r subAccountBalanceRepoImpl) FindAllSubAccountBalanceByJournalID(ctx context.Context, walletId entity.WalletID, journalIDs []entity.JournalID) (map[entity.JournalID][]entity.SubAccountBalance, error) {
 	r.log.Info(ctx, "called")
 
-	var bsonObjectIDs bson.A
-	for _, val := range journalIDs {
-		bsonObjectIDs = append(bsonObjectIDs, val)
-	}
+	//var bsonObjectIDs bson.A
+	//for _, val := range journalIDs {
+	//	bsonObjectIDs = append(bsonObjectIDs, val)
+	//}
 
 	p := database.NewDefaultParam().
 		Page(1).
 		Size(200).
 		Filter("sub_account.parent_account.wallet_id", walletId).
-		Filter("journal_id", bson.M{"$in": bsonObjectIDs}).
+		Filter("journal_id", bson.M{"$in": SliceToBsonA(journalIDs)}).
 		Sort("sequence", 1)
 
 	result := map[entity.JournalID][]entity.SubAccountBalance{}

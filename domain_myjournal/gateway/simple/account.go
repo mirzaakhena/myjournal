@@ -56,16 +56,16 @@ func (r accountRepoImpl) FindAllAccount(ctx context.Context, page, size int64, w
 func (r accountRepoImpl) FindAccounts(ctx context.Context, req repository.FindAccountsRequest) (map[entity.AccountCode]entity.Account, error) {
 	r.log.Info(ctx, "called")
 
-	var bsonObjectIDs bson.A
-	for _, val := range req.AccountIds {
-		bsonObjectIDs = append(bsonObjectIDs, val)
-	}
+	//var bsonObjectIDs bson.A
+	//for _, val := range req.AccountIds {
+	//	bsonObjectIDs = append(bsonObjectIDs, val)
+	//}
 
 	p := database.NewDefaultParam().
 		Page(1).
 		Size(100).
 		Filter("wallet_id", req.WalletID).
-		Filter("_id", bson.M{"$in": bsonObjectIDs}).
+		Filter("_id", bson.M{"$in": SliceToBsonA(req.AccountIds)}).
 		Sort("code", 1)
 
 	results := map[entity.AccountCode]entity.Account{}

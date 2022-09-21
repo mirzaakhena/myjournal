@@ -55,16 +55,16 @@ func (r subAccountRepoImpl) FindAllSubAccount(ctx context.Context, page, size in
 func (r subAccountRepoImpl) FindSubAccounts(ctx context.Context, req repository.FindSubAccountsRequest) (map[entity.SubAccountCode]entity.SubAccount, error) {
 	r.log.Info(ctx, "called")
 
-	var bsonObjectIDs bson.A
-	for _, val := range req.SubAccountCodes {
-		bsonObjectIDs = append(bsonObjectIDs, val)
-	}
+	//var bsonObjectIDs bson.A
+	//for _, val := range req.SubAccountCodes {
+	//	bsonObjectIDs = append(bsonObjectIDs, val)
+	//}
 
 	p := database.NewDefaultParam().
 		Page(1).
 		Size(100).
 		Filter("parent_account.wallet_id", req.WalletID).
-		Filter("code", bson.M{"$in": bsonObjectIDs}).
+		Filter("code", bson.M{"$in": SliceToBsonA(req.SubAccountCodes)}).
 		Sort("code", 1)
 
 	results := map[entity.SubAccountCode]entity.SubAccount{}
