@@ -17,8 +17,9 @@ import (
 func (r *Controller) getAllAccountHandler() gin.HandlerFunc {
 
 	type request struct {
-		Page int64 `form:"page,omitempty,default=1"`
-		Size int64 `form:"size,omitempty,default=30"`
+		getallaccount.InportRequest
+		//Page int64 `form:"page,omitempty,default=1"`
+		//Size int64 `form:"size,omitempty,default=30"`
 	}
 
 	type response struct {
@@ -40,6 +41,7 @@ func (r *Controller) getAllAccountHandler() gin.HandlerFunc {
 		}
 
 		var req getallaccount.InportRequest
+		req.FindAllAccountRequest = jsonReq.FindAllAccountRequest
 		req.WalletId = entity.WalletID(c.Param("walletId"))
 		req.Page = jsonReq.Page
 		req.Size = jsonReq.Size

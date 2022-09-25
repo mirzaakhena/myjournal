@@ -44,19 +44,28 @@ type FindSubAccountsRequest struct {
 	SubAccountCodes []entity.SubAccountCode
 }
 
+type FindAllAccountRequest struct {
+	WalletId entity.WalletID
+	Name     string
+}
+
 type FindAllAccountRepo interface {
-	FindAllAccount(ctx context.Context, page, size int64, walletId entity.WalletID) ([]*entity.Account, int64, error)
+	FindAllAccount(ctx context.Context, page, size int64, req FindAllAccountRequest) ([]*entity.Account, int64, error)
 }
 
 type FindAllSubAccountRequest struct {
 	WalletID          entity.WalletID
-	ParentAccountName string             `form:"parent_account_name,omitempty,default="`
-	SubAccountName    string             `form:"sub_account_name,omitempty,default="`
-	Side              entity.AccountSide `form:"side,omitempty,default="`
+	ParentAccountName string `form:"parent_account_name,omitempty,default="`
+	SubAccountName    string `form:"sub_account_name,omitempty,default="`
+	//Side              entity.AccountSide `form:"side,omitempty,default="`
 }
 
 type FindAllSubAccountRepo interface {
 	FindAllSubAccount(ctx context.Context, page, size int64, req FindAllSubAccountRequest) ([]*entity.SubAccount, int64, error)
+}
+
+type FindAllSubAccountByNameRepo interface {
+	FindAllSubAccountByName(ctx context.Context, walletID entity.WalletID, names []string) (map[string]entity.SubAccount, error)
 }
 
 type FindAllJournalRequest struct {

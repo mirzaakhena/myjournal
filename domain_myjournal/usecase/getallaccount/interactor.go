@@ -23,7 +23,7 @@ func (r *getAllAccountInteractor) Execute(ctx context.Context, req InportRequest
 
 	res := &InportResponse{}
 
-	objs, count, err := r.outport.FindAllAccount(ctx, req.Page, req.Size, req.WalletId)
+	objs, count, err := r.outport.FindAllAccount(ctx, req.Page, req.Size, req.FindAllAccountRequest)
 	if err != nil {
 		return nil, err
 	}

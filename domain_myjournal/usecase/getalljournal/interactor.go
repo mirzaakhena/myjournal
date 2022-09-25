@@ -2,6 +2,9 @@ package getalljournal
 
 import (
 	"context"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+	"math"
 	"myjournal/domain_myjournal/model/entity"
 )
 
@@ -42,6 +45,8 @@ func (r *getAllJournalInteractor) Execute(ctx context.Context, req InportRequest
 		return nil, err
 	}
 
+	p := message.NewPrinter(language.Indonesian)
+
 	for _, obj := range objs {
 
 		balances := make([]SubAccountBalance, 0)
@@ -50,27 +55,27 @@ func (r *getAllJournalInteractor) Execute(ctx context.Context, req InportRequest
 
 		for _, sab := range subAccountBalances {
 
-			subAccount := sab.SubAccount
-			account := subAccount.ParentAccount
+			amountDebit := ""
+			amountCredit := ""
+
+			if sab.Direction == entity.BalanceDirectionDebit {
+
+				amountDebit = p.Sprintf("%.2f", math.Abs(float64(sab.Amount)))
+
+				//amountDebit = fmt.Sprintf("%.000f", math.Abs(float64(sab.Amount)))
+			} else if sab.Direction == entity.BalanceDirectionCredit {
+
+				amountCredit = p.Sprintf("%.2f", math.Abs(float64(sab.Amount)))
+				//amountCredit = fmt.Sprintf("%.000f", math.Abs(float64(sab.Amount)))
+			}
 
 			balances = append(balances, SubAccountBalance{
-				ID: sab.ID,
-				SubAccount: SubAccount{
-					ID:   subAccount.ID,
-					Code: subAccount.Code,
-					Name: subAccount.Name,
-					ParentAccount: Account{
-						ID:    account.ID,
-						Code:  account.Code,
-						Name:  account.Name,
-						Level: account.Level,
-						Side:  account.Side,
-					},
-				},
-				Amount:    sab.Amount,
-				Balance:   sab.Balance,
-				Sequence:  sab.Sequence,
-				Direction: sab.Direction,
+				ID:             sab.ID,
+				AmountDebit:    amountDebit,
+				AmountCredit:   amountCredit,
+				Sequence:       sab.Sequence,
+				SubAccountCode: sab.SubAccount.Code,
+				SubAccountName: sab.SubAccount.Name,
 			})
 		}
 

@@ -16,13 +16,52 @@
     </div>
   </div>
 
-  <MirzaTable :fields="fields" :items="state.items">
-    <template #action="{item}">
-      <div class="btn-group">
-        <button type="button" class="btn btn-warning btn-sm" @click="showModalDetail(item)">Detail</button>
-      </div>
-    </template>
-  </MirzaTable>
+  <table class="table table-sm">
+
+    <thead>
+    <tr>
+      <th>Action</th>
+      <th>Account Code</th>
+      <th>Account Name</th>
+      <th>SubAccount Code</th>
+      <th>SubAccount Name</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th></th>
+      <th><input type="text" class="form-control" placeholder="Parent Account" v-model="state.filter.parent_account_name"></th>
+      <th></th>
+      <th><input type="text" class="form-control" placeholder="Sub Account" v-model="state.filter.sub_account_name"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr v-for="item in state.items" :key="item.id">
+      <td>
+        <div class="btn-group">
+          <button type="button" class="btn btn-warning btn-sm" @click="showModalDetail(item)">Detail</button>
+        </div>
+      </td>
+      <td>{{item.parentAccount.code}}</td>
+      <td>{{item.parentAccount.name}}</td>
+      <td>{{item.code}}</td>
+      <td>{{item.name}}</td>
+    </tr>
+    </tbody>
+  </table>
+
+<!--  <MirzaTable :fields="fields" :items="state.items">-->
+<!--    <template #action="{item}">-->
+<!--      <div class="btn-group">-->
+<!--        <button type="button" class="btn btn-warning btn-sm" @click="showModalDetail(item)">Detail</button>-->
+<!--      </div>-->
+<!--    </template>-->
+<!--    <template #accountCode="{item}">-->
+<!--      {{item.parentAccount.code}}-->
+<!--    </template>-->
+<!--    <template #accountName="{item}">-->
+<!--      {{item.parentAccount.name}}-->
+<!--    </template>-->
+<!--  </MirzaTable>-->
 
   <ViewModalDetail ref="modalDetail" @submit="reload"></ViewModalDetail>
 
@@ -86,8 +125,10 @@ const reload = async () => {
 
 const fields = [
   {header: "Action", fieldName: "action",},
-  {header: "Name", fieldName: "name",},
-  {header: "Date", fieldName: "date",},
+  {header: "Account Code", fieldName: "accountCode",},
+  {header: "Account Name", fieldName: "accountName",},
+  {header: "SubAccount Code", fieldName: "code",},
+  {header: "SubAccount Name", fieldName: "name",},
 ]
 
 reload()

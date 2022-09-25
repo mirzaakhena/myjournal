@@ -17,8 +17,8 @@ import (
 func (r *Controller) getAllAccountBalanceHandler() gin.HandlerFunc {
 
 	type request struct {
-		Page int `form:"page,omitempty,default=1"`
-		Size int `form:"size,omitempty,default=30"`
+		Page int64 `form:"page,omitempty,default=1"`
+		Size int64 `form:"size,omitempty,default=30"`
 	}
 
 	type response struct {

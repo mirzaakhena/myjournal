@@ -16,13 +16,48 @@
     </div>
   </div>
 
-  <MirzaTable :fields="fields" :items="state.items">
-    <template #action="{item}">
-      <div class="btn-group">
-        <button type="button" class="btn btn-warning btn-sm" @click="showModalDetail(item)">Detail</button>
-      </div>
-    </template>
-  </MirzaTable>
+  <table class="table table-sm">
+
+    <thead>
+    <tr>
+      <th>Action</th>
+      <th>Side</th>
+      <th>Name</th>
+      <th>Code</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr v-for="item in state.items" :key="item.id" :class="item.level===1?'table-secondary':''">
+      <td>
+        <div class="btn-group">
+          <button type="button" class="btn btn-warning btn-sm" @click="showModalDetail(item)">Detail</button>
+        </div>
+      </td>
+      <td>
+        <span class="badge" :class="item.side==='ACTIVA'?'text-bg-primary': 'text-bg-danger'">{{ item.side }}</span>
+      </td>
+      <td>
+        <template v-for="(n,index) in item.level-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</template> {{item.name}}
+      </td>
+      <td>{{ item.code }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+<!--  <MirzaTable :fields="fields" :items="state.items">-->
+<!--    <template #action="{item}">-->
+<!--      <div class="btn-group">-->
+<!--        <button type="button" class="btn btn-warning btn-sm" @click="showModalDetail(item)">Detail</button>-->
+<!--      </div>-->
+<!--    </template>-->
+<!--    <template #name="{item}">-->
+<!--      <template v-for="(n,index) in item.level-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</template> {{item.name}}-->
+<!--    </template>-->
+<!--    <template #side="{item}">-->
+<!--      <span class="badge" :class="item.side==='ACTIVA'?'text-bg-primary': 'text-bg-danger'">{{ item.side }}</span>-->
+<!--    </template>-->
+
+<!--  </MirzaTable>-->
 
   <ViewModalDetail ref="modalDetail" @submit="reload"></ViewModalDetail>
 
@@ -86,8 +121,9 @@ const reload = async () => {
 
 const fields = [
   {header: "Action", fieldName: "action",},
+  {header: "Side", fieldName: "side",},
   {header: "Name", fieldName: "name",},
-  {header: "Date", fieldName: "date",},
+  {header: "Code", fieldName: "code",},
 ]
 
 reload()

@@ -41,6 +41,8 @@ func (r *Controller) getAllJournalHandler() gin.HandlerFunc {
 		var req getalljournal.InportRequest
 		req.FindAllJournalRequest = jsonReq.FindAllJournalRequest
 		req.WalletID = entity.WalletID(c.Param("walletId"))
+		req.Page = jsonReq.Page
+		req.Size = jsonReq.Size
 
 		r.Log.Info(ctx, util.MustJSON(req))
 

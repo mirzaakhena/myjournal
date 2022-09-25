@@ -40,6 +40,8 @@ func (r *Controller) getAllSubaccountBalanceHandler() gin.HandlerFunc {
 		var req getallsubaccountbalance.InportRequest
 		req.FindAllSubAccountBalanceRequest = jsonReq.FindAllSubAccountBalanceRequest
 		req.WalletID = entity.WalletID(c.Param("walletId"))
+		req.Page = jsonReq.Page
+		req.Size = jsonReq.Size
 
 		r.Log.Info(ctx, util.MustJSON(req))
 

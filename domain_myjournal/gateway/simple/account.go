@@ -34,13 +34,14 @@ func (r accountRepoImpl) SaveAccounts(ctx context.Context, objs []*entity.Accoun
 	return nil
 }
 
-func (r accountRepoImpl) FindAllAccount(ctx context.Context, page, size int64, walletId entity.WalletID) ([]*entity.Account, int64, error) {
+func (r accountRepoImpl) FindAllAccount(ctx context.Context, page, size int64, req repository.FindAllAccountRequest) ([]*entity.Account, int64, error) {
 	r.log.Info(ctx, "called")
 
 	p := database.NewDefaultParam().
 		Page(page).
 		Size(size).
-		Filter("wallet_id", walletId).
+		Filter("name", req.Name).
+		Filter("wallet_id", req.WalletId).
 		Sort("code", 1)
 
 	objs := make([]*entity.Account, 0)

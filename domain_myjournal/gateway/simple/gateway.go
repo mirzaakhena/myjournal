@@ -1,11 +1,12 @@
 package simple
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
 	"myjournal/shared/driver"
 	"myjournal/shared/infrastructure/config"
 	"myjournal/shared/infrastructure/database"
 	"myjournal/shared/infrastructure/logger"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type gateway struct {

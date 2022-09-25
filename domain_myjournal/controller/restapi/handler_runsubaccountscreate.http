@@ -41,3 +41,13 @@ POST http://localhost:8001/wallet/WLT01/subaccounts
 
   ]
 }
+
+###
+
+POST http://localhost:8001/wallet/WLT01/subaccounts
+
+{
+  "subAccounts": [
+    { "parentAccountCode": "1110", "name": "kas kecil" }
+  ]
+}

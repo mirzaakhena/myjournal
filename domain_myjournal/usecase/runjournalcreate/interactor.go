@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"myjournal/domain_myjournal/model/entity"
 	"myjournal/domain_myjournal/model/repository"
+	"sort"
 )
 
 //go:generate mockery --name Outport -output mocks/
@@ -27,28 +28,6 @@ func (r *runJournalCreateInteractor) Execute(ctx context.Context, req InportRequ
 
 	journalId := entity.NewJournalID(req.WalletId, req.UserId, req.Date)
 
-	//subAccountCodes := r.getSubAccountCodes(req.Transactions)
-	//
-	//subAccountObjMap, err := r.outport.FindSubAccounts(ctx, repository.FindSubAccountsRequest{
-	//	WalletID:        req.WalletId,
-	//	SubAccountCodes: subAccountCodes,
-	//})
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//if len(subAccountObjMap) == 0 {
-	//	return nil, fmt.Errorf("subaccount is empty")
-	//}
-	//
-	//balanceBySubAccountCodeMap, err := r.outport.FindLastSubAccountBalances(ctx, repository.FindLastSubAccountBalancesRequest{
-	//	WalletID:        req.WalletId,
-	//	SubAccountCodes: subAccountCodes,
-	//})
-	//if err != nil {
-	//	return nil, err
-	//}
-
 	journalObj := entity.Journal{
 		ID:          journalId,
 		Date:        req.Date,
@@ -61,11 +40,6 @@ func (r *runJournalCreateInteractor) Execute(ctx context.Context, req InportRequ
 	if err != nil {
 		return nil, err
 	}
-
-	//balances, err := r.getBalance(ctx, journalObj, req.Transactions)
-	//if err != nil {
-	//	return nil, err
-	//}
 
 	subAccountCodes := make([]entity.SubAccountCode, 0)
 	for _, balance := range req.Transactions {
@@ -95,7 +69,7 @@ func (r *runJournalCreateInteractor) Execute(ctx context.Context, req InportRequ
 	totalBalancePerDirection := map[entity.BalanceDirection]entity.Money{}
 
 	subAccountBalancesResult := make([]*entity.SubAccountBalance, 0)
-	for i, sab := range req.Transactions {
+	for _, sab := range req.Transactions {
 
 		subAccount, exist := subAccountObjMap[sab.SubAccountCode]
 		if !exist {
@@ -120,7 +94,7 @@ func (r *runJournalCreateInteractor) Execute(ctx context.Context, req InportRequ
 			Date:       journalObj.Date,
 			Amount:     amount,
 			Balance:    lastBalance + amount,
-			Sequence:   i + 1,
+			Sequence:   0,
 			Direction:  direction,
 			SubAccount: subAccount,
 		})
@@ -133,6 +107,15 @@ func (r *runJournalCreateInteractor) Execute(ctx context.Context, req InportRequ
 		return nil, fmt.Errorf("journal is not balance")
 	}
 
+	// arrange the sequence of DEBIT and CREDIT (debit first before credit)
+	sort.Slice(subAccountBalancesResult, func(i, j int) bool {
+		return subAccountBalancesResult[i].Direction > subAccountBalancesResult[j].Direction
+	})
+
+	for i, x := range subAccountBalancesResult {
+		x.Sequence = i + 1
+	}
+
 	err = r.outport.SaveSubAccountBalances(ctx, subAccountBalancesResult)
 	if err != nil {
 		return nil, err
@@ -140,79 +123,3 @@ func (r *runJournalCreateInteractor) Execute(ctx context.Context, req InportRequ
 
 	return res, nil
 }
-
-//func (r runJournalCreateInteractor) getBalance(ctx context.Context, journal entity.Journal, subAccountBalances []Transaction) ([]*entity.SubAccountBalance, error) {
-
-//subAccountCodes := r.getSubAccountCodes(subAccountBalances)
-//
-//subAccountObjMap, err := r.outport.FindSubAccounts(ctx, repository.FindSubAccountsRequest{
-//	WalletID:        journal.WalletID,
-//	SubAccountCodes: subAccountCodes,
-//})
-//if err != nil {
-//	return nil, err
-//}
-//
-//if len(subAccountObjMap) == 0 {
-//	return nil, fmt.Errorf("subaccount is empty")
-//}
-//
-//balanceBySubAccountCodeMap, err := r.outport.FindLastSubAccountBalances(ctx, repository.FindLastSubAccountBalancesRequest{
-//	WalletID:        journal.WalletID,
-//	SubAccountCodes: subAccountCodes,
-//})
-//if err != nil {
-//	return nil, err
-//}
-//
-//totalBalancePerDirection := map[entity.BalanceDirection]entity.Money{}
-//
-//subAccountBalancesResult := make([]*entity.SubAccountBalance, 0)
-//for i, sab := range subAccountBalances {
-//
-//	subAccount, exist := subAccountObjMap[sab.SubAccountCode]
-//	if !exist {
-//		return nil, fmt.Errorf("SubAccountCode %s is not exist", sab.SubAccountCode)
-//	}
-//
-//	subAccountBalanceId := entity.NewSubAccountBalanceID(journal.ID, subAccount.Code)
-//
-//	lastBalance, exist := balanceBySubAccountCodeMap[sab.SubAccountCode]
-//	if !exist {
-//		lastBalance = 0
-//	}
-//
-//	direction := subAccount.GetDirection(sab.Sign)
-//
-//	amount := sab.Sign.GetNumberSign() * sab.Amount
-//
-//	subAccountBalancesResult = append(subAccountBalancesResult, &entity.SubAccountBalance{
-//		ID:         subAccountBalanceId,
-//		JournalID:  journal.ID,
-//		UserID:     journal.UserID,
-//		Date:       journal.Date,
-//		Amount:     amount,
-//		Balance:    lastBalance + amount,
-//		Sequence:   i + 1,
-//		Direction:  direction,
-//		SubAccount: subAccount,
-//	})
-//
-//	totalBalancePerDirection[direction] += sab.Amount
-//
-//}
-//
-//if totalBalancePerDirection[entity.BalanceDirectionDebit] != totalBalancePerDirection[entity.BalanceDirectionCredit] {
-//	return nil, fmt.Errorf("journal is not balance")
-//}
-
-//return subAccountBalancesResult, nil
-//}
-
-//func (r runJournalCreateInteractor) getSubAccountCodes(subAccountBalances []Transaction) []entity.SubAccountCode {
-//	subAccountCodes := make([]entity.SubAccountCode, 0)
-//	for _, balance := range subAccountBalances {
-//		subAccountCodes = append(subAccountCodes, balance.SubAccountCode)
-//	}
-//	return subAccountCodes
-//}

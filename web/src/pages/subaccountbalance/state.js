@@ -5,6 +5,7 @@ export const state = reactive({
     filter: {
         page: 1,
         size: 20,
+        sub_account_name: '',
     },
     totalItems: 0,
     pagePerTotalRecord: computed(()=> `${state.filter.page} / ${getNumberOfPage()}` )

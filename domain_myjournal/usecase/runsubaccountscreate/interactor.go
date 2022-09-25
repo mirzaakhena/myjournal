@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"myjournal/domain_myjournal/model/entity"
 	"myjournal/domain_myjournal/model/repository"
+	"myjournal/shared/util"
 	"strings"
 )
 
@@ -30,15 +31,31 @@ func (r *runSubAccountsCreateInteractor) Execute(ctx context.Context, req Inport
 
 	parentAccountMapUnique := map[entity.AccountCode]any{}
 	parentAccountIDList := make([]entity.AccountID, 0)
-	for _, account := range req.SubAccounts {
 
-		if _, exist := parentAccountMapUnique[account.ParentAccountCode]; exist {
+	subAccountNameList := make([]string, 0)
+
+	for _, subAccount := range req.SubAccounts {
+
+		if _, exist := parentAccountMapUnique[subAccount.ParentAccountCode]; exist {
 			continue
 		}
 
-		parentAccountMapUnique[account.ParentAccountCode] = nil
-		parentAccountIDList = append(parentAccountIDList, entity.NewAccountID(req.WalletId, account.ParentAccountCode))
+		parentAccountMapUnique[subAccount.ParentAccountCode] = nil
 
+		subAccountNameList = append(subAccountNameList, subAccount.Name)
+		parentAccountIDList = append(parentAccountIDList, entity.NewAccountID(req.WalletId, subAccount.ParentAccountCode))
+
+	}
+
+	subAccountNameMap, err := r.outport.FindAllSubAccountByName(ctx, req.WalletId, subAccountNameList)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, subAccount := range req.SubAccounts {
+		if _, exist := subAccountNameMap[strings.ToLower(subAccount.Name)]; exist {
+			return nil, fmt.Errorf("subAccount with name %s already exist", subAccount.Name)
+		}
 	}
 
 	parentAccountMap, err := r.outport.FindAccounts(ctx, repository.FindAccountsRequest{
@@ -50,7 +67,7 @@ func (r *runSubAccountsCreateInteractor) Execute(ctx context.Context, req Inport
 	}
 
 	if len(parentAccountMap) == 0 {
-		return nil, fmt.Errorf("parent account is Empty")
+		return nil, fmt.Errorf("parent subAccount is Empty")
 	}
 
 	for _, account := range req.SubAccounts {
@@ -58,7 +75,8 @@ func (r *runSubAccountsCreateInteractor) Execute(ctx context.Context, req Inport
 		parentAccount := parentAccountMap[account.ParentAccountCode]
 
 		if account.Code == "" {
-			account.Code = entity.SubAccountCode(strings.ToUpper(strings.ReplaceAll(account.Name, " ", "_")))
+			account.Code = entity.SubAccountCode(util.GenerateID(20))
+			// account.Code = entity.SubAccountCode(strings.ToUpper(strings.ReplaceAll(account.Name, " ", "_")))
 		}
 
 		subAccountObjs = append(subAccountObjs, &entity.SubAccount{

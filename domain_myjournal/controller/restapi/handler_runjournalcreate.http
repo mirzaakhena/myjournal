@@ -51,7 +51,7 @@ POST http://localhost:8001/wallet/WLT01/journal
 POST http://localhost:8001/wallet/WLT01/journal
 
 {
-  "description": "Bayar Utang",
+  "description": "Nambah Utang",
   "transactions": [
     {"sign": "+", "amount": 20000,"subAccountCode": "UDIN"},
     {"sign": "+", "amount": 15000,"subAccountCode": "KAS_KECIL"},

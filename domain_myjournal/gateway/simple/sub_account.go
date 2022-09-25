@@ -2,6 +2,7 @@ package simple
 
 import (
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -9,6 +10,7 @@ import (
 	"myjournal/domain_myjournal/model/repository"
 	"myjournal/shared/infrastructure/database"
 	"myjournal/shared/infrastructure/logger"
+	"strings"
 )
 
 type subAccountRepoImpl struct {
@@ -29,7 +31,6 @@ func (r subAccountRepoImpl) FindAllSubAccount(ctx context.Context, page, size in
 		Page(page).
 		Size(size).
 		Filter("parent_account.wallet_id", req.WalletID).
-		Filter("parent_account.side", req.Side).
 		Sort("code", 1)
 
 	if len(req.ParentAccountName) > 0 {
@@ -37,7 +38,7 @@ func (r subAccountRepoImpl) FindAllSubAccount(ctx context.Context, page, size in
 	}
 
 	if len(req.SubAccountName) > 0 {
-		p = p.Filter("parent_account.name", primitive.Regex{Pattern: req.SubAccountName, Options: "i"})
+		p = p.Filter("name", primitive.Regex{Pattern: req.SubAccountName, Options: "i"})
 	}
 
 	r.log.Info(ctx, "called %v %v %v %v", page, size, req, p)
@@ -62,7 +63,7 @@ func (r subAccountRepoImpl) FindSubAccounts(ctx context.Context, req repository.
 
 	p := database.NewDefaultParam().
 		Page(1).
-		Size(100).
+		Size(int64(len(req.SubAccountCodes))).
 		Filter("parent_account.wallet_id", req.WalletID).
 		Filter("code", bson.M{"$in": SliceToBsonA(req.SubAccountCodes)}).
 		Sort("code", 1)
@@ -70,6 +71,43 @@ func (r subAccountRepoImpl) FindSubAccounts(ctx context.Context, req repository.
 	results := map[entity.SubAccountCode]entity.SubAccount{}
 	_, err := r.repo.GetAllEachItem(p, func(obj entity.SubAccount) {
 		results[obj.Code] = obj
+	})
+	if err != nil {
+		r.log.Error(ctx, err.Error())
+		return nil, err
+	}
+
+	return results, nil
+}
+
+func (r subAccountRepoImpl) FindAllSubAccountByName(ctx context.Context, walletID entity.WalletID, names []string) (map[string]entity.SubAccount, error) {
+	r.log.Info(ctx, "called")
+
+	joinNames := make([]primitive.Regex, 0)
+
+	for _, s := range names {
+
+		joinNames = append(joinNames, primitive.Regex{Pattern: s, Options: "i"})
+
+		//if i == 0 {
+		//	joinNames = s
+		//	continue
+		//}
+		//joinNames = fmt.Sprintf("%s|%s", joinNames, s)
+	}
+
+	fmt.Printf(">>>>>>>>%s\n", joinNames)
+
+	p := database.NewDefaultParam().
+		Page(1).
+		Size(int64(len(names))).
+		Filter("parent_account.wallet_id", walletID).
+		Filter("name", bson.M{"$in": joinNames}).
+		Sort("code", 1)
+
+	results := map[string]entity.SubAccount{}
+	_, err := r.repo.GetAllEachItem(p, func(obj entity.SubAccount) {
+		results[strings.ToLower(obj.Name)] = obj
 	})
 	if err != nil {
 		r.log.Error(ctx, err.Error())

@@ -2,6 +2,10 @@ package entity
 
 type Money float64
 
+func NewMoneyZero() Money {
+	return Money(0.0)
+}
+
 type BalanceDirection string
 
 const BalanceDirectionDebit = BalanceDirection("DEBIT")

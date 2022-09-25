@@ -31,12 +31,11 @@ type InportResponse struct {
 
 type TheItem struct {
 	ID         entity.SubAccountBalanceID `json:"id" bson:"_id"`
-	WalletID   entity.WalletID            `json:"walletId" bson:"wallet_id"  index:"-1"`
 	Journal    Journal                    `json:"journal" bson:"journal"`
 	SubAccount SubAccount                 `json:"subAccount" bson:"sub_account"`
 	Date       time.Time                  `json:"date" bson:"date"`
-	Amount     entity.Money               `json:"amount" bson:"amount"`
-	Balance    entity.Money               `json:"balance" bson:"balance"`
+	Amount     string                     `json:"amount" bson:"amount"`
+	Balance    string                     `json:"balance" bson:"balance"`
 	Sequence   int                        `json:"sequence" bson:"sequence"`
 	Direction  entity.BalanceDirection    `json:"direction" bson:"direction"`
 }
@@ -55,9 +54,10 @@ type SubAccount struct {
 }
 
 type Account struct {
-	ID    entity.AccountID    `json:"id" bson:"_id"`
-	Code  entity.AccountCode  `json:"code" bson:"code" index:"1"`
-	Name  string              `json:"name" bson:"name"`
-	Level entity.AccountLevel `json:"level" bson:"level"`
-	Side  entity.AccountSide  `json:"side" bson:"side"`
+	ID       entity.AccountID    `json:"id" bson:"_id"`
+	WalletID entity.WalletID     `json:"walletId" bson:"wallet_id"  index:"-1"`
+	Code     entity.AccountCode  `json:"code" bson:"code" index:"1"`
+	Name     string              `json:"name" bson:"name"`
+	Level    entity.AccountLevel `json:"level" bson:"level"`
+	Side     entity.AccountSide  `json:"side" bson:"side"`
 }

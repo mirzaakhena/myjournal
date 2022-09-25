@@ -22,6 +22,35 @@
         <button type="button" class="btn btn-warning btn-sm" @click="showModalDetail(item)">Detail</button>
       </div>
     </template>
+
+    <template #balances="{item}">
+
+      <table class="table table-sm">
+        <thead>
+        <tr>
+          <th class="text-start">Name</th>
+          <th class="text-end">Debit</th>
+          <th class="text-end">Credit</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="item in item.balances" :key="item.id">
+          <td class="text-start">{{item.subAccountName}}</td>
+          <td class="text-end">{{item.amountDebit}}</td>
+          <td class="text-end">{{item.amountCredit}}</td>
+        </tr>
+        </tbody>
+      </table>
+
+    </template>
+
+    <template #walletUser="{item}">
+
+      <p>{{item.walletId}}</p>
+      <p>{{item.userId}}</p>
+      <p>{{item.date}}</p>
+    </template>
+
   </MirzaTable>
 
   <ViewModalDetail ref="modalDetail" @submit="reload"></ViewModalDetail>
@@ -86,8 +115,16 @@ const reload = async () => {
 
 const fields = [
   {header: "Action", fieldName: "action",},
+  {header: "Wallet User Date", fieldName: "walletUser",},
   {header: "Description", fieldName: "description",},
-  {header: "Date", fieldName: "date",},
+  {header: "Balances", fieldName: "balances",},
+
+]
+
+const fieldBalances = [
+  {header: 'Name', fieldName: 'subAccountName'},
+  {header: 'DEBIT', fieldName: 'amountDebit'},
+  {header: 'CREDIT', fieldName: 'amountCredit'},
 ]
 
 reload()

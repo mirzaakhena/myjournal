@@ -15,7 +15,7 @@ type Inport usecase.Inport[context.Context, InportRequest, InportResponse]
 type InportRequest struct {
 	repository.FindAllJournalRequest
 	Page int64 `form:"page,omitempty,default=1"`
-	Size int64 `form:"size,omitempty,default=1"`
+	Size int64 `form:"size,omitempty,default=30"`
 }
 
 // InportResponse is response payload after running the usecase
@@ -34,25 +34,30 @@ type Journal struct {
 }
 
 type SubAccountBalance struct {
-	ID         entity.SubAccountBalanceID `json:"id" bson:"_id"`
-	SubAccount SubAccount                 `json:"subAccount" bson:"sub_account"`
-	Amount     entity.Money               `json:"amount" bson:"amount"`
-	Balance    entity.Money               `json:"balance" bson:"balance"`
-	Sequence   int                        `json:"sequence" bson:"sequence"`
-	Direction  entity.BalanceDirection    `json:"direction" bson:"direction"`
+	ID             entity.SubAccountBalanceID `json:"id" bson:"_id"`
+	AmountDebit    string                     `json:"amountDebit"`
+	AmountCredit   string                     `json:"amountCredit"`
+	Sequence       int                        `json:"sequence" bson:"sequence"`
+	SubAccountCode entity.SubAccountCode      `json:"subAccountCode" bson:"code"`
+	SubAccountName string                     `json:"subAccountName" bson:"name"`
+
+	//SubAccount     SubAccount                 `json:"subAccount" bson:"sub_account"`
+	//Direction    entity.BalanceDirection    `json:"direction" bson:"direction"`
+	//Amount     entity.Money               `json:"amount" bson:"amount"`
+	//Balance    entity.Money               `json:"balance" bson:"balance"`
 }
 
 type SubAccount struct {
-	ID            entity.SubAccountID   `json:"id" bson:"_id"`
-	Code          entity.SubAccountCode `json:"code" bson:"code" index:"1"`
-	Name          string                `json:"name" bson:"name"`
-	ParentAccount Account               `json:"parentAccount" bson:"parent_account"`
+	ID   entity.SubAccountID   `json:"id" bson:"_id"`
+	Code entity.SubAccountCode `json:"code" bson:"code" index:"1"`
+	Name string                `json:"name" bson:"name"`
+	//ParentAccount Account               `json:"parentAccount" bson:"parent_account"`
 }
 
 type Account struct {
-	ID    entity.AccountID    `json:"id" bson:"_id"`
-	Code  entity.AccountCode  `json:"code" bson:"code" index:"1"`
-	Name  string              `json:"name" bson:"name"`
-	Level entity.AccountLevel `json:"level" bson:"level"`
-	Side  entity.AccountSide  `json:"side" bson:"side"`
+	ID   entity.AccountID   `json:"id" bson:"_id"`
+	Code entity.AccountCode `json:"code" bson:"code" index:"1"`
+	Name string             `json:"name" bson:"name"`
+	//Level entity.AccountLevel `json:"level" bson:"level"`
+	Side entity.AccountSide `json:"side" bson:"side"`
 }

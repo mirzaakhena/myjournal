@@ -2,6 +2,8 @@ package getallsubaccountbalance
 
 import (
 	"context"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 	"myjournal/domain_myjournal/model/entity"
 )
 
@@ -40,15 +42,19 @@ func (r *getAllSubaccountBalanceInteractor) Execute(ctx context.Context, req Inp
 
 	res.Count = count
 
+	p := message.NewPrinter(language.Indonesian)
+
 	for _, obj := range objs {
 
 		subAccount := obj.SubAccount
 		account := subAccount.ParentAccount
 		journal := journalObjs[obj.JournalID]
 
+		amount := p.Sprintf("%.2f", obj.Amount)
+		balance := p.Sprintf("%.2f", obj.Balance)
+
 		res.Items = append(res.Items, TheItem{
-			ID:       obj.ID,
-			WalletID: journal.WalletID,
+			ID: obj.ID,
 			Journal: Journal{
 				ID:          journal.ID,
 				UserID:      journal.UserID,
@@ -59,16 +65,17 @@ func (r *getAllSubaccountBalanceInteractor) Execute(ctx context.Context, req Inp
 				Code: subAccount.Code,
 				Name: subAccount.Name,
 				ParentAccount: Account{
-					ID:    account.ID,
-					Code:  account.Code,
-					Name:  account.Name,
-					Level: account.Level,
-					Side:  account.Side,
+					ID:       account.ID,
+					WalletID: journal.WalletID,
+					Code:     account.Code,
+					Name:     account.Name,
+					Level:    account.Level,
+					Side:     account.Side,
 				},
 			},
 			Date:      obj.Date,
-			Amount:    obj.Amount,
-			Balance:   obj.Balance,
+			Amount:    amount,
+			Balance:   balance,
 			Sequence:  obj.Sequence,
 			Direction: obj.Direction,
 		})
